@@ -9,7 +9,7 @@ import { html as svg } from '@redsift/d3-rs-svg';
 import { 
   brand,
   display,
-  highlights,
+  dashes,
   fonts,
   widths
 } from '@redsift/d3-rs-theme';
@@ -74,7 +74,13 @@ export function mapChildren(source, child) {
     
     return data;
   };
-  
+
+  data.connections = [];
+  data.connect = (a, b, name) => {
+    data.connections.push({ from: a, to: b, name: name });
+    return data;
+  };
+
   data.expand = (l) => {
     l = l || data.height;
     data.each(d => {
@@ -346,6 +352,33 @@ export default function trees(id) {
         })
         .remove();
 
+      let connection = g.selectAll('path.connections').data(her.connections, (d, i) => d.from.id || i);
+      let connectionEnter = connection.enter().insert('path', 'g')
+      .attr('class', 'connection')
+      .attr('d', d => {
+
+        let from = null,
+            to = null;
+
+        nodes[0].each(e => {
+          if (e.id === d.from.id) {
+            from = e;
+          }
+          if (e.id === d.to.id) {
+            to = e;
+          }
+        });
+        let o = {
+          x: from.x, 
+          y: from.y
+        };
+        let t = {
+          x: to.x, 
+          y: to.y
+        };
+        return diagonal(o, t)
+      });        
+
       // Store the old positions for transition.
       nodes.forEach(d => {
         d.x0 = d.x;
@@ -388,6 +421,14 @@ export default function trees(id) {
                     stroke: ${display[_theme].grid};
                     stroke-width: ${widths.axis};
                   }
+
+                  ${_impl.self()} .connection {
+                    fill: none;
+                    stroke: ${display[_theme].axis};
+                    stroke-width: ${widths.grid};
+                    stroke-dasharray: ${dashes.grid}
+                  }
+
                 `;
   
   _impl.importFonts = function(value) {

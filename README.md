@@ -41,6 +41,6 @@
     ...
 
 ## TODO
-- Tips
+- Animate fade in/update/removal, text label, node hunting when closed, curve when same depth
 - Subitiles
-- Arbitary node links to indicate overlaps
+- Tips

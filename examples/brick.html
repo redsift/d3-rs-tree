@@ -463,10 +463,25 @@
                       return d.hasChildren ? 'default' : 'ip-addr';
                     });
     var data = d3_rs_tree
-                    .mapChildren(FLARE)
+                    .mapChildren(SMALL)
                     .sum(function(d) { return d.size; })
-                    .scale()
-                    .collapse();
+                    .scale();
+
+    var nd = null;
+    var linked = false;
+    data.eachAfter(function (d) {
+      if (nd == null) {
+        nd = d;
+        return
+      }
+
+      if (d.id == 5) {
+        data.connect(nd, d, 'Test');
+        linked = true;
+      }
+    });
+
+    // data.collapse();
 
     function update(animated) {
       let svg = d3.select('#elm').datum(data);
