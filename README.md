@@ -39,3 +39,10 @@
     var chart = require("@redsift/d3-rs-tree");
     var eml = chart.html();
     ...
+
+## TODO
+- Expanding
+- Sorting
+- Tips
+- Subitiles
+- Text classes

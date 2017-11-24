@@ -4,5 +4,6 @@ export {
 
 
 export {
-  default as html
+  default as html,
+  mapChildren as mapChildren
 } from "./src/tree";
