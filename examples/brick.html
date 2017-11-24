@@ -451,10 +451,14 @@
       ]
       };
 
+    var triangle = d3.symbol().type(d3.symbolTriangle);
+    var circle = d3.symbol().type(d3.symbolCircle);
+
     var theme = 'light';
     var tree = d3_rs_tree.html('flare')
                     .theme(theme)
-                    .nodeRadius([3, 10])
+                    .nodeRadius([5, 15])
+                    .nodeSymbol((d) => d.data.name === 'cluster' ? triangle : circle)
                     .nameClass(function (d) {
                       return d.hasChildren ? 'default' : 'ip-addr';
                     });

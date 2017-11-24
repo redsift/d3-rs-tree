@@ -3,6 +3,7 @@ import { select } from 'd3-selection';
 import { hierarchy, tree } from 'd3-hierarchy';
 import { max } from 'd3-array';
 import { scalePow } from 'd3-scale';
+import { symbol, symbolCircle } from 'd3-shape';
 
 import { html as svg } from '@redsift/d3-rs-svg';
 import { 
@@ -117,6 +118,7 @@ export default function trees(id) {
       onClick = null,
       msize = DEFAULT_TEXT_SCALE,
       nodeRadius = DEFAULT_NODE_RADIUS,
+      nodeSymbol = null,
       nodeFill = null,
       nodeClass = null,
       nameClass = null;
@@ -150,6 +152,14 @@ export default function trees(id) {
       _nodeFill = (d) => d.children || d.hasChildren ? brand.standard[brand.names.green] : null;
     } else if (typeof(_nodeFill) !== 'function') {
       _nodeFill = () => nodeFill;
+    }
+    
+    let _nodeSymbol = nodeSymbol;
+    if (_nodeSymbol == null) {
+      const circle = symbol().type(symbolCircle);
+      _nodeSymbol = () => circle;
+    } else if (typeof(_nodeSymbol) !== 'function') {
+      _nodeSymbol = () => nodeSymbol;
     }
 
     selection.each(function() {
@@ -246,10 +256,10 @@ export default function trees(id) {
           .attr('class', 'node')
           .attr('transform', d => `translate(${d.y},${d.x})`);
       
-      nodeEnter.append('circle').attr('r', TINY);
+      nodeEnter.append('path').attr('d', d => _nodeSymbol(d).size(TINY)(d)); // TINY
     
       nodeEnter.append('text')
-          .attr('x', d => d.children || d.hasChildren ? -(_nodeRadius(d) + DEFAULT_TEXT_PADDING) : _nodeRadius(d) + DEFAULT_TEXT_PADDING)
+          .attr('x', d => d.hasChildren ? -(_nodeRadius(d)) : _nodeRadius(d))
           .attr('dy', d => d.id == 1 ? -10 : 0)
           .attr('alignment-baseline', d => d.id == 1 ? 'ideographic' : 'middle')
           .attr('text-anchor', d => d.id == 1 ? 'start' : d.children || d.hasChildren ? 'end' : 'start')
@@ -259,7 +269,7 @@ export default function trees(id) {
       // Transition nodes to their new position.
       let nodeUpdate = nodeEnter.merge(gNode);
       if (onClick) {    
-        nodeUpdate.select('circle').on('click', onClick);
+        nodeUpdate.select('path').on('click', onClick);
       }
       if (transition === true) {
         nodeUpdate = nodeUpdate.transition(context);
@@ -267,8 +277,11 @@ export default function trees(id) {
 
       nodeUpdate.attr('transform', d => `translate(${d.y},${d.x})`);
     
-      nodeUpdate.select('circle')
-          .attr('r', _nodeRadius)
+      nodeUpdate.select('path')
+          .attr('d', d => {
+            const s = _nodeRadius(d);
+            return _nodeSymbol(d).size(s*s)(d);
+          })
           .attr('class', _nodeClass)
           .style('fill', _nodeFill);
     
@@ -288,7 +301,7 @@ export default function trees(id) {
           .remove();
     
       // On exit reduce the node circles size to 0
-      nodeExit.select('circle').attr('r', TINY);
+      nodeExit.select('path').attr('d', d => _nodeSymbol(d).size(TINY)(d));
 
       // On exit reduce the opacity of text labels
       nodeExit.select('text').style('fill-opacity', TINY);
@@ -316,7 +329,7 @@ export default function trees(id) {
 
       // Transition back to the parent element position
       linkUpdate.attr('d', d => diagonal(d, d.parent))
-        .style('stroke-opacity', 1.0);;
+        .style('stroke-opacity', 1.0);
 
       // Remove any exiting links
       let linkExit = link.exit();
@@ -360,13 +373,13 @@ export default function trees(id) {
                     fill: ${display[_theme].text}                
                   }
 
-                  ${_impl.self()} .node circle {
+                  ${_impl.self()} .node path {
                     fill: ${display[_theme].background};
                     stroke: ${display[_theme].axis};
-                    stroke-width: ${widths.grid};
+                    stroke-width: ${widths.axis};
                   }
 
-                  ${_impl.self()} .node circle.interactive {
+                  ${_impl.self()} .node path.interactive {
                     cursor: hand;                  
                   }
 
@@ -444,7 +457,10 @@ export default function trees(id) {
   _impl.nameClass = function(value) {
     return arguments.length ? (nameClass = value, _impl) : nameClass;
   }; 
-  
+
+  _impl.nodeSymbol = function(value) {
+    return arguments.length ? (nodeSymbol = value, _impl) : nodeSymbol;
+  }; 
   
   return _impl;
 }
