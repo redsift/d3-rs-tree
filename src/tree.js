@@ -39,11 +39,12 @@ export function mapChildren(source, child) {
   let minZ = undefined,
       maxZ = undefined;
   let i = 0;
+
   data.each(d => {
     d.hasChildren = d.children && d.children.length > 0 ? true : false;
     d.id = ++i;
     let s = d.data.name.length;
-    if (s > maxS) {
+    if (d.depth === data.height && s > maxS) {
       maxS = s;
     }
     let z = d.data.value;
@@ -58,10 +59,23 @@ export function mapChildren(source, child) {
       maxZ = z;
     }    
   });
-  
+
   data.maxS = maxS;
   data.minZ = minZ;
   data.maxZ = maxZ;
+
+  data.expand = (l) => {
+    l = l || data.height;
+    data.each(d => {
+      if (d.depth < l) {
+        if (d._children) {
+          d.children = d._children;
+          d._children = null;
+        }
+      }
+    });
+    return data;
+  };
 
   data.collapse = (l) => {
     l = l || 1;
@@ -131,7 +145,7 @@ export default function trees(id) {
         }
 
         let levelWidth = [ 1 ];
-        function childCount(level, n) {
+        const childCount = (level, n) => {
           if (n.children && n.children.length > 0) {
               if (levelWidth.length <= level + 1) levelWidth.push(0);
               levelWidth[level + 1] += n.children.length;
