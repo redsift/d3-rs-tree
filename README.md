@@ -41,10 +41,6 @@
     ...
 
 ## TODO
-- Expanding
-- Sorting
 - Tips
 - Subitiles
-- Text classes
 - Arbitary node links to indicate overlaps
-- Demo sortable by natural, size of subnet addresses, domain lookups, activity

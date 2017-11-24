@@ -2,7 +2,7 @@
 import { select } from 'd3-selection';
 import { hierarchy, tree } from 'd3-hierarchy';
 import { max } from 'd3-array';
-import { scaleLog } from 'd3-scale';
+import { scalePow } from 'd3-scale';
 
 import { html as svg } from '@redsift/d3-rs-svg';
 import { 
@@ -36,8 +36,6 @@ export function mapChildren(source, child) {
   let data = hierarchy(source, child);
 
   let maxS = 0;
-  let minZ = undefined,
-      maxZ = undefined;
   let i = 0;
 
   data.each(d => {
@@ -47,23 +45,35 @@ export function mapChildren(source, child) {
     if (d.depth === data.height && s > maxS) {
       maxS = s;
     }
-    let z = d.data.value;
-    if (minZ == null) {
-      minZ = z;
-    } else if (z < minZ) {
-      minZ = z;
-    }
-    if (maxZ == null) {
-      maxZ = z;
-    } else if (z > maxZ) {
-      maxZ = z;
-    }    
+    
   });
 
   data.maxS = maxS;
-  data.minZ = minZ;
-  data.maxZ = maxZ;
 
+
+  data.scale = () => {
+    let minZ = undefined,
+    maxZ = undefined;
+    data.each(d => {
+      let z = d.value || 0;
+      if (minZ == null) {
+        minZ = z;
+      } else if (z < minZ) {
+        minZ = z;
+      }
+      if (maxZ == null) {
+        maxZ = z;
+      } else if (z > maxZ) {
+        maxZ = z;
+      }    
+    });
+
+    data.minZ = minZ;
+    data.maxZ = maxZ;
+    
+    return data;
+  };
+  
   data.expand = (l) => {
     l = l || data.height;
     data.each(d => {
@@ -108,7 +118,8 @@ export default function trees(id) {
       msize = DEFAULT_TEXT_SCALE,
       nodeRadius = DEFAULT_NODE_RADIUS,
       nodeFill = null,
-      nodeClass = null;
+      nodeClass = null,
+      nameClass = null;
   
   function _impl(context) {
     let selection = context.selection ? context.selection() : context,
@@ -121,10 +132,19 @@ export default function trees(id) {
     }
             
     let _nodeClass = nodeClass;
-    if (typeof(_nodeClass) !== 'function') {
+    if (_nodeClass == null) {
+      _nodeClass = (d) => d.hasChildren ? 'interactive' : null;
+    } else if (typeof(_nodeClass) !== 'function') {
       _nodeClass = () => nodeClass;
     }
 
+    let _nameClass = nameClass;
+    if (_nameClass == null) {
+      _nameClass = () => 'default';
+    } else if (typeof(_nameClass) !== 'function') {
+      _nameClass = () => nameClass;
+    }
+    
     let _nodeFill = nodeFill;
     if (_nodeFill == null) {
       _nodeFill = (d) => d.children || d.hasChildren ? brand.standard[brand.names.green] : null;
@@ -196,14 +216,19 @@ export default function trees(id) {
         if (Array.isArray(nodeRadius)) {
           let log = () => nodeRadius[0];
           if (her.minZ != null && her.maxZ != null) {
-            log = scaleLog().domain([her.minZ, her.maxZ]).range(nodeRadius).clamp(true);
+            log = scalePow().exponent(1.1).domain([her.minZ, her.maxZ]).range(nodeRadius).clamp(true);
           }
-          _nodeRadius = (d) => log(d.data.value || 0);
+          _nodeRadius = (d) => {
+            let r = log(d.value);
+            if (isNaN(r)) {
+              return TINY;
+            }
+            return r;
+          };
         } else {
           _nodeRadius = () => nodeRadius;
         }
       }
-      scaleLog()
 
       // estimate with msize
       let trees = tree().size([h, w - (her.maxS * msize)]);
@@ -234,7 +259,7 @@ export default function trees(id) {
       // Transition nodes to their new position.
       let nodeUpdate = nodeEnter.merge(gNode);
       if (onClick) {    
-        nodeUpdate.on('click', onClick);
+        nodeUpdate.select('circle').on('click', onClick);
       }
       if (transition === true) {
         nodeUpdate = nodeUpdate.transition(context);
@@ -249,6 +274,7 @@ export default function trees(id) {
     
       nodeUpdate.select('text')
           .text(d => d.data.name) // not abosutely required
+          .attr('class', _nameClass)
           .style('fill-opacity', 1);
     
       // Transition exiting nodes to the parent's new position.
@@ -325,9 +351,11 @@ export default function trees(id) {
   _impl.defaultStyle = (_theme, _width) => `
                   ${_impl.importFonts() ? fonts.fixed.cssImport : ''}
                   ${_impl.importFonts() ? fonts.variable.cssImport : ''}  
-                  ${_impl.self()} text { 
-                    font-family: ${fonts.variable.family};
+                  ${_impl.self()} { 
                     font-size: ${fonts.variable.sizeForWidth(_width)};
+                  }
+                  ${_impl.self()} text.default { 
+                    font-family: ${fonts.variable.family};
                     font-weight: ${fonts.fixed.weightMonochrome};  
                     fill: ${display[_theme].text}                
                   }
@@ -336,6 +364,10 @@ export default function trees(id) {
                     fill: ${display[_theme].background};
                     stroke: ${display[_theme].axis};
                     stroke-width: ${widths.grid};
+                  }
+
+                  ${_impl.self()} .node circle.interactive {
+                    cursor: hand;                  
                   }
 
                   ${_impl.self()} .link {
@@ -408,6 +440,11 @@ export default function trees(id) {
   _impl.nodeClass = function(value) {
     return arguments.length ? (nodeClass = value, _impl) : nodeClass;
   };   
+  
+  _impl.nameClass = function(value) {
+    return arguments.length ? (nameClass = value, _impl) : nameClass;
+  }; 
+  
   
   return _impl;
 }

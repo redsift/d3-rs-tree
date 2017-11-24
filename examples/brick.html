@@ -2,7 +2,7 @@
   <head>
     <link rel="stylesheet" type="text/css" href="https://static.redsift.io/reusable/ui-rs-core/latest/css/ui-rs-core.min.css">
     <style>
-      
+    @import url(https://fonts.googleapis.com/css?family=Source+Code+Pro:300,500);  
     body {
       margin: 1em;
     }
@@ -12,6 +12,11 @@
     div#buttons {
       margin-bottom: 1em;
     }
+
+    text.ip-addr {
+      font-family: "Source Code Pro", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    }
+
     </style> 
   </head>
   <body>
@@ -19,6 +24,8 @@
       <button onclick="toggleTheme()">Theme</button>
       <button onclick="doCollapse()">Collapse</button>          
       <button onclick="doExpand()">Expand</button>                 
+      <button onclick="doSortId()">Sort: Id</button>  
+      <button onclick="doSortSize()">Sort: Size</button>  
     </div>
     <div id="elm"></div>
         
@@ -34,26 +41,25 @@
       "children": [
         {
         "name": "analytics",
-        "value": 10000,
         "hasChildren": true,
         "children": [
           {
           "name": "cluster",
           "children": [
-            {"name": "AgglomerativeCluster", "value": 3938},
-            {"name": "CommunityStructure", "value": 3812},
-            {"name": "HierarchicalCluster", "value": 6714},
-            {"name": "MergeEdge", "value": 743}
+            {"name": "AgglomerativeCluster", "size": 3938},
+            {"name": "CommunityStructure", "size": 3812},
+            {"name": "HierarchicalCluster", "size": 16714},
+            {"name": "MergeEdge", "size": 743}
           ]
           },
           {
           "name": "graph",
           "children": [
-            {"name": "BetweennessCentrality", "value": 3534},
-            {"name": "LinkDistance", "value": 5731},
-            {"name": "MaxFlowMinCut", "value": 7840},
-            {"name": "ShortestPaths", "value": 5914},
-            {"name": "SpanningTree", "value": 3416}
+            {"name": "BetweennessCentrality", "size": 354},
+            {"name": "LinkDistance", "size": 571},
+            {"name": "MaxFlowMinCut", "size": 740},
+            {"name": "ShortestPaths", "size": 514},
+            {"name": "SpanningTree", "size": 346}
           ]
           },
           {
@@ -445,10 +451,18 @@
       ]
       };
 
-
-
-    var tree = d3_rs_tree.html('flare').theme('light').nodeRadius([5, 10]);
-    var data = d3_rs_tree.mapChildren(SMALL).collapse();
+    var theme = 'light';
+    var tree = d3_rs_tree.html('flare')
+                    .theme(theme)
+                    .nodeRadius([3, 10])
+                    .nameClass(function (d) {
+                      return d.hasChildren ? 'default' : 'ip-addr';
+                    });
+    var data = d3_rs_tree
+                    .mapChildren(FLARE)
+                    .sum(function(d) { return d.size; })
+                    .scale()
+                    .collapse();
 
     function update(animated) {
       let svg = d3.select('#elm').datum(data);
@@ -473,7 +487,6 @@
 
     // -- buttons
 
-    let theme = 'light';
     function toggleTheme() {
       if (theme === 'light') {
         theme = 'dark';
@@ -492,6 +505,16 @@
 
     function doExpand() {
       data = data.expand();
+      update(true);
+    }
+
+    function doSortId() {
+      data.sort(function(a, b) { return b.height - a.height || a.id - b.id; });
+      update(true);
+    }
+
+    function doSortSize() {
+      data.sort(function(a, b) { return b.height - a.height || b.value - a.value; });
       update(true);
     }
 
