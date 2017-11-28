@@ -463,7 +463,7 @@
                       return d.hasChildren ? 'default' : 'ip-addr';
                     });
     var data = d3_rs_tree
-                    .mapChildren(SMALL)
+                    .mapChildren(FLARE)
                     .sum(function(d) { return d.size; })
                     .scale();
 

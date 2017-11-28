@@ -1,7 +1,7 @@
 
 import { select } from 'd3-selection';
 import { hierarchy, tree } from 'd3-hierarchy';
-import { max } from 'd3-array';
+import { min, max } from 'd3-array';
 import { scalePow } from 'd3-scale';
 import { symbol, symbolCircle } from 'd3-shape';
 
@@ -20,7 +20,9 @@ const DEFAULT_MARGIN = 16;
 const DEFAULT_TEXT_SCALE = 8.39; // hack value to do fast estimation of length of string
 const DEFAULT_NODE_RADIUS = 5.0;
 const TINY = 1e-6;
+const HUGE = 1e6;
 const DEFAULT_TEXT_PADDING = 5;
+const DEFAULT_PIXELS_PER_NODE = 35;
 
 // Creates a curved (diagonal) path from parent to the child nodes
 function diagonal(s, d) {
@@ -33,16 +35,19 @@ function diagonal(s, d) {
     ${(s.y + d.y) / 2} ${d.x},
     ${d.y} ${d.x}`
 }
-export function mapChildren(source, child) {
-  let data = hierarchy(source, child);
+export function mapChildren(source, labelFn) {
+  labelFn = labelFn || (d => d.data.name)
+
+  let data = hierarchy(source);
 
   let maxS = 0;
   let i = 0;
 
   data.each(d => {
-    d.hasChildren = d.children && d.children.length > 0 ? true : false;
+    const ch = d.children
+    d.hasChildren = ch && ch.length > 0 ? true : false;
     d.id = ++i;
-    let s = d.data.name.length;
+    let s = labelFn(d).length;
     if (d.depth === data.height && s > maxS) {
       maxS = s;
     }
@@ -50,7 +55,6 @@ export function mapChildren(source, child) {
   });
 
   data.maxS = maxS;
-
 
   data.scale = () => {
     let minZ = undefined,
@@ -116,7 +120,7 @@ export default function trees(id) {
       background = undefined,
       width = DEFAULT_SIZE,
       height = null,
-      pixelsPerNode = 30,
+      pixelsPerNode = DEFAULT_PIXELS_PER_NODE,
       margin = DEFAULT_MARGIN,
       style = undefined,
       scale = 1.0,
@@ -127,18 +131,42 @@ export default function trees(id) {
       nodeSymbol = null,
       nodeFill = null,
       nodeClass = null,
-      nameClass = null;
+      nameClass = null,
+      label = null;
   
+  // Seperation function could be custom    
+  const separation = (a, b) => {
+    if (a.parent !== b.parent) {
+      return 2; // space between groups at same depth
+    } 
+    
+    if (a.children || b.children) {
+      return 6; // open children
+    }
+
+    if (a.hasChildren && b.hasChildren) {
+      return 2; // will open out but has not yet
+    }
+
+    return 1;
+  }
+      
   function _impl(context) {
     let selection = context.selection ? context.selection() : context,
         transition = (context.selection !== undefined);
-
   
     let _background = background;
     if (_background === undefined) {
       _background = display[theme].background;
     }
-            
+    
+    let _label = label;
+    if (_label == null) {
+      _label = (d) => d.data.name;
+    } else if (typeof(_label) !== 'function') {
+      _label = () => label;
+    }
+
     let _nodeClass = nodeClass;
     if (_nodeClass == null) {
       _nodeClass = (d) => d.hasChildren ? 'interactive' : null;
@@ -228,6 +256,7 @@ export default function trees(id) {
 
       
       let _nodeRadius = nodeRadius;
+      let maxNodeRadius = null;
       if (typeof(_nodeRadius) !== 'function') {
         if (Array.isArray(nodeRadius)) {
           let log = () => nodeRadius[0];
@@ -241,13 +270,19 @@ export default function trees(id) {
             }
             return r;
           };
+          maxNodeRadius = () => nodeRadius[1];
         } else {
           _nodeRadius = () => nodeRadius;
         }
+      } 
+      
+      if (maxNodeRadius == null) {
+        maxNodeRadius = _nodeRadius;
       }
 
       // estimate with msize
-      let trees = tree().size([h, w - (her.maxS * msize)]);
+      let r = maxNodeRadius();
+      let trees = tree().size([h, w - (her.maxS * msize) - r  - DEFAULT_TEXT_PADDING]).separation(separation);
 
       let treeData = trees(her);
     
@@ -265,11 +300,10 @@ export default function trees(id) {
       nodeEnter.append('path').attr('d', d => _nodeSymbol(d).size(TINY)(d)); // TINY
     
       nodeEnter.append('text')
-          .attr('x', d => d.hasChildren ? -(_nodeRadius(d)) : _nodeRadius(d))
-          .attr('dy', d => d.id == 1 ? -10 : 0)
-          .attr('alignment-baseline', d => d.id == 1 ? 'ideographic' : 'middle')
+          .attr('dy', d => d.id == 1 ? maxNodeRadius(d) : 0)
+          .attr('alignment-baseline', d => d.id == 1 ? 'text-before-edge' : 'middle')
           .attr('text-anchor', d => d.id == 1 ? 'start' : d.children || d.hasChildren ? 'end' : 'start')
-          .text(d => d.data.name)
+          .text(_label)
           .style('fill-opacity', TINY);
     
       // Transition nodes to their new position.
@@ -292,7 +326,8 @@ export default function trees(id) {
           .style('fill', _nodeFill);
     
       nodeUpdate.select('text')
-          .text(d => d.data.name) // not abosutely required
+          .text(_label) // not abosutely required
+          .attr('x', d => d.id == 1 ? 0 : d.hasChildren ? -_nodeRadius(d) : maxNodeRadius() + DEFAULT_TEXT_PADDING)
           .attr('class', _nameClass)
           .style('fill-opacity', 1);
     
@@ -503,5 +538,9 @@ export default function trees(id) {
     return arguments.length ? (nodeSymbol = value, _impl) : nodeSymbol;
   }; 
   
+  _impl.label = function(value) {
+    return arguments.length ? (label = value, _impl) : label;
+  }; 
+
   return _impl;
 }
