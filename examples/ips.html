@@ -2290,7 +2290,7 @@ var CAMDEN = {
     var tree = d3_rs_tree.html('flare')
                     .theme(theme)
                     .label(label)
-                    .nodeRadius([7, 20])
+                    .nodeRadius([6, 20])
                     .nodeSymbol(function (d) { return d.data.name === 'cluster' ? triangle : circle})
                     .nameClass(function (d) {
                       return d.hasChildren ? 'default' : 'ip-addr';

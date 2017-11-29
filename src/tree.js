@@ -511,7 +511,8 @@ export default function trees(id) {
                   ${_impl.self()} .node path {
                     fill: ${display[_theme].background};
                     stroke: ${display[_theme].axis};
-                    stroke-width: ${widths.axis};
+                    stroke-width: 1.5; /* need > 1 for decent rendering on non retina */
+                    shape-rendering: geometricprecision;
                   }
 
                   ${_impl.self()} .node path.interactive {
