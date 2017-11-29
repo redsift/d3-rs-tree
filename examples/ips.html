@@ -29,7 +29,7 @@
   </head>
   <body>
     <div id="options">
-      <button onclick="doSortId()">Sort: Mechanisms</button>  
+      <button onclick="doSortId()">Default</button>  
       <button onclick="doSort('subnetCount')">Sort: Subnet Size</button>  
       <button onclick="doSort('rfc4408DnsCount')">Sort: DNS Lookups (RFC-4408)</button>  
       <button onclick="doSort('rfc7208DnsCount')">Sort: DNS Lookups (RFC-7208)</button>  
@@ -2307,7 +2307,7 @@ var CAMDEN = {
       data.expand()
           .sum(function (d) { return 0; })
           .scale()
-          .sort(function(a, b) { return b.height - a.height || a.id - b.id; })
+          .sort(function(a, b) { return a.id - b.id; })
           .sum(function (d) { 
             return d.children ? d.children.length + 1 : 1
           })
@@ -2326,7 +2326,7 @@ var CAMDEN = {
       data.expand()
           .sum(function (d) { return d[field]; })
           .scale()
-          .sort(function(a, b) { return b.height - a.height || b.value - a.value || a.id - b.id; })
+          .sort(function(a, b) { return b.value - a.value || a.id - b.id; })
           .openState(state);
 
       update(true);

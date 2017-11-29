@@ -39,7 +39,7 @@ export function mapChildren(source, labelFn) {
   labelFn = labelFn || (d => d.data.name)
 
   let data = hierarchy(source);
-
+  
   let maxS = 0;
   let i = 0;
 
@@ -141,7 +141,7 @@ export function mapChildren(source, labelFn) {
   }
 
   data.openState = (state) => {
-    data.each(d => {
+    data.eachAfter(d => {
       if (state[d.id] === true) {
         if (d.children) return;
         d.children = d._children;
