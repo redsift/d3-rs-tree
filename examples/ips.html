@@ -6,13 +6,21 @@
     body {
       margin: 1em;
     }
-    div#elm {
-      text-align: center;
-    }
-    div#buttons {
+    div#options {
       margin-bottom: 1em;
     }
-
+    div#elm {
+      position: relative;
+      text-align: center;
+    }
+    div#zoom {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+    div#zoom button {
+      font-weight: 800;
+    }    
     text.ip-addr {
       font-family: "Source Code Pro", Consolas, "Liberation Mono", Menlo, Courier, monospace;
     }
@@ -20,16 +28,19 @@
     </style> 
   </head>
   <body>
-    <div id="buttons">
+    <div id="options">
       <button onclick="toggleTheme()">Theme</button>
-      <button onclick="doCollapse()">Collapse</button>          
-      <button onclick="doExpand()">Expand</button>                 
       <button onclick="doSortId()">Sort: Mechanisms</button>  
       <button onclick="doSort('subnetCount')">Sort: Subnet Size</button>  
       <button onclick="doSort('rfc4408DnsCount')">Sort: DNS Lookups (RFC-4408)</button>  
       <button onclick="doSort('rfc7208DnsCount')">Sort: DNS Lookups (RFC-7208)</button>  
     </div>
-    <div id="elm"></div>
+    <div id="elm">
+          <div id="zoom">
+            <button onclick="doExpand()">+</button>   
+            <button onclick="doCollapse()">-</button>       
+          </div>
+    </div>
         
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="//static.redsift.io/reusable/d3-rs-theme/latest/d3-rs-theme.umd-es2015.min.js"></script>
@@ -38,7 +49,7 @@
 
     'use strict';
 
-    const FUGRO = {
+    var FUGRO = {
     "raw": "v=spf1 include:_spf.salesforce.com include:amazonses.com ip4:46.34.88.128/25  ip4:37.74.5.32/29 ip4:95.138.138.252/32 ip4:85.17.187.192/27 ip4:95.211.74.192/27 ip4:62.204.93.128/27 ip4:83.149.98.0/26 ip4:85.17.205.0/27 ~all",
     "host": "fugro.com.",
     "children": [
@@ -153,7 +164,7 @@
     ]
 };
 
-const SUBITO = {
+var SUBITO = {
     "id": 1,
     "raw": "v=spf1 mx:blocket.se include:spf.mailjet.com include:servers.mcsv.net ip4:109.168.127.160/27 ip4:212.31.252.64/27 ip4:212.77.68.6 ip4:62.212.1.160 ip4:62.212.0.160 ip4:93.94.32.0/21 ip4:93.94.37.253 ip4:109.168.121.48/28 ip4:37.202.20.23/32 ip4:213.215.152.254/32 ip4:213.215.152.253/32 ip4:213.215.152.252/32 ip4:213.215.152.251/32 ip4:109.168.121.54/32 ip4:109.168.121.55/32 ip4:109.168.121.57/32 ip4:109.168.121.58/32 -all",
     "host": "subito.it.",
@@ -500,7 +511,7 @@ const SUBITO = {
     ]
 };
 
-  const DUDLEY = {
+  var DUDLEY = {
     "id": 1,
     "raw": "v=spf1 ip4:193.105.48.24 ip4:193.105.48.25 include:spf1.dudley.gov.uk include:spf2.dudley.gov.uk -all",
     "host": "dudley.gov.uk.",
@@ -735,7 +746,7 @@ const SUBITO = {
     ]
 };
 
-const CAMDEN = {
+var CAMDEN = {
     "id": 1,
     "raw": "v=spf1 include:SPF1.camden.gov.uk include:SPF2.camden.gov.uk include:SPF3.camden.gov.uk -all",
     "host": "camden.gov.uk.",
@@ -2216,8 +2227,8 @@ const CAMDEN = {
     var tree = d3_rs_tree.html('flare')
                     .theme(theme)
                     .label(label)
-                    .nodeRadius([5, 19])
-                    .nodeSymbol((d) => d.data.name === 'cluster' ? triangle : circle)
+                    .nodeRadius([7, 21])
+                    .nodeSymbol(function (d) { return d.data.name === 'cluster' ? triangle : circle})
                     .nameClass(function (d) {
                       return d.hasChildren ? 'default' : 'ip-addr';
                     });
@@ -2227,24 +2238,9 @@ const CAMDEN = {
     var data = d3_rs_tree.mapChildren(dataSet, label);
     sortDefault();
     data.collapse();
-/*
-    var nd = null;
-    var linked = false;
-    data.eachAfter(function (d) {
-      if (nd == null) {
-        nd = d;
-        return
-      }
-
-      if (d.id == 5) {
-        data.connect(nd, d, 'Test');
-        linked = true;
-      }
-    });
-*/
 
     function update(animated) {
-      let svg = d3.select('#elm').datum(data);
+      var svg = d3.select('#elm').datum(data);
       if (animated) {
         svg = svg.transition().duration(666);
       }  

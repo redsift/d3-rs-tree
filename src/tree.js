@@ -111,6 +111,30 @@ export function mapChildren(source, labelFn) {
     return data;
   };
 
+  data.countDepth = (l, fn) => {
+    let i = 0;
+    data.each(d => {
+      if (d.depth !== l) return;
+      i += (fn(d) ? 1 : 0);
+    });
+    return i;
+  }
+
+  data.countPeers = (node, fn) => {
+    if (node.parent == null) return 0;
+
+    const l = node.depth;
+    let i = 0;
+    node.parent.each(d => {
+      if (d.depth !== l) return;
+      i += (fn(d) ? 1 : 0);
+    });
+    return i;
+  }  
+
+
+
+
   return data;
 }  
 
@@ -284,13 +308,27 @@ export default function trees(id) {
       let r = maxNodeRadius();
       let trees = tree().size([h, w - (her.maxS * msize) - r  - DEFAULT_TEXT_PADDING]).separation(separation);
 
+      // Pre-process to hide labels
+      her.each(d => {
+        if (d.children) {
+          d.labelHidden = false; // always show labels for open nodes
+          return;
+        }
+        const open = her.countPeers(d, (d) => d.children);
+        if (open == her.countPeers(d, (d) => d.hasChildren)) {
+          d.labelHidden = false; // always show labels is all nodes are open
+          return;
+        }
+        d.labelHidden = open > 0;
+      });
+
       let treeData = trees(her);
     
       // Compute the new tree layout.
       let nodes = treeData.descendants(),
           links = treeData.descendants().slice(1);
-      let i = 0;
-      let gNode = g.selectAll('g.node').data(nodes, (d, i) => d.id || i);
+
+      let gNode = g.selectAll('g.node').data(nodes, (d) => d.id || 0);
       
       // Enter any new nodes at the parent's previous position.
       let nodeEnter = gNode.enter().append('g')
@@ -329,7 +367,7 @@ export default function trees(id) {
           .text(_label) // not abosutely required
           .attr('x', d => d.id == 1 ? 0 : d.hasChildren ? -_nodeRadius(d) : maxNodeRadius() + DEFAULT_TEXT_PADDING)
           .attr('class', _nameClass)
-          .style('fill-opacity', 1);
+          .style('fill-opacity', d => d.labelHidden ? TINY : 1.0);
     
       // Transition exiting nodes to the parent's new position.
       let nodeExit = gNode.exit();
@@ -430,14 +468,13 @@ export default function trees(id) {
   };
 
   _impl.defaultStyle = (_theme, _width) => `
-                  ${_impl.importFonts() ? fonts.fixed.cssImport : ''}
                   ${_impl.importFonts() ? fonts.variable.cssImport : ''}  
                   ${_impl.self()} { 
                     font-size: ${fonts.variable.sizeForWidth(_width)};
                   }
                   ${_impl.self()} text.default { 
                     font-family: ${fonts.variable.family};
-                    font-weight: ${fonts.fixed.weightMonochrome};  
+                    font-weight: ${fonts.variable.weightColor};  
                     fill: ${display[_theme].text}                
                   }
 
