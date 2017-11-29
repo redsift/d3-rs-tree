@@ -41,12 +41,13 @@ export function mapChildren(source, labelFn) {
   let data = hierarchy(source);
   
   let maxS = 0;
-  let i = 0;
+  let i = 0xffff;
 
   data.each(d => {
+    i++
     const ch = d.children
     d.hasChildren = ch && ch.length > 0 ? true : false;
-    d.id = ++i;
+    d.id = d.data.id || i;
     let s = labelFn(d).length;
     if (d.depth === data.height && s > maxS) {
       maxS = s;
@@ -76,12 +77,6 @@ export function mapChildren(source, labelFn) {
     data.minZ = minZ;
     data.maxZ = maxZ;
     
-    return data;
-  };
-
-  data.connections = [];
-  data.connect = (a, b, name) => {
-    data.connections.push({ from: a, to: b, name: name });
     return data;
   };
 
@@ -454,7 +449,8 @@ export default function trees(id) {
         })
         .remove();
 
-      let connection = g.selectAll('path.connections').data(her.connections, (d, i) => d.from.id || i);
+
+      let connection = g.selectAll('path.connections').data(her.data.connections, (d, i) => d.from.id || i);
       let connectionEnter = connection.enter().insert('path', 'g')
       .attr('class', 'connection')
       .attr('d', d => {
@@ -463,13 +459,18 @@ export default function trees(id) {
             to = null;
 
         nodes[0].each(e => {
-          if (e.id === d.from.id) {
+          if (e.id === d.from) {
             from = e;
           }
-          if (e.id === d.to.id) {
+          if (e.id === d.to) {
             to = e;
           }
         });
+
+        console.log(from, to);
+
+        if (from == null || to == null) return '';
+
         let o = {
           x: from.x, 
           y: from.y

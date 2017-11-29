@@ -163,351 +163,414 @@
     ]
 };
 
-var SUBITO = {
-    "id": 1,
-    "raw": "v=spf1 mx:blocket.se include:spf.mailjet.com include:servers.mcsv.net ip4:109.168.127.160/27 ip4:212.31.252.64/27 ip4:212.77.68.6 ip4:62.212.1.160 ip4:62.212.0.160 ip4:93.94.32.0/21 ip4:93.94.37.253 ip4:109.168.121.48/28 ip4:37.202.20.23/32 ip4:213.215.152.254/32 ip4:213.215.152.253/32 ip4:213.215.152.252/32 ip4:213.215.152.251/32 ip4:109.168.121.54/32 ip4:109.168.121.55/32 ip4:109.168.121.57/32 ip4:109.168.121.58/32 -all",
-    "host": "subito.it.",
-    "children": [
-        {
-            "id": 2,
-            "qualifier": "+",
-            "mechanism": "mx",
-            "value": "blocket.se",
-            "host": "blocket.se.",
-            "children": [
-                {
-                    "id": 13,
-                    "host": "aspmx3.googlemail.com.",
-                    "children": [
-                        {
-                            "id": 3,
-                            "mechanism": "ip4",
-                            "value": "74.125.130.27",
-                            "rfc7208DnsCount": 1,
-                            "subnetCount": 1
-                        },
-                        {
-                            "id": 7,
-                            "mechanism": "ip6",
-                            "value": "2404:6800:4003:c01::1a",
-                            "rfc7208DnsCount": 1,
-                            "subnetCount": 1
-                        }
-                    ]
-                },
-                {
-                    "id": 14,
-                    "host": "aspmx.l.google.com.",
-                    "children": [
-                        {
-                            "id": 4,
-                            "mechanism": "ip4",
-                            "value": "64.233.166.27",
-                            "rfc7208DnsCount": 1,
-                            "subnetCount": 1
-                        },
-                        {
-                            "id": 5,
-                            "mechanism": "ip6",
-                            "value": "2a00:1450:400c:c0a::1a",
-                            "rfc7208DnsCount": 1,
-                            "subnetCount": 1
-                        }
-                    ]
-                },
-                {
-                    "id": 15,
-                    "host": "alt2.aspmx.l.google.com.",
-                    "children": [
-                        {
-                            "id": 6,
-                            "mechanism": "ip6",
-                            "value": "2404:6800:4003:c01::1a",
-                            "rfc7208DnsCount": 1,
-                            "subnetCount": 1
-                        },
-                        {
-                            "id": 12,
-                            "mechanism": "ip4",
-                            "value": "74.125.130.27",
-                            "rfc7208DnsCount": 1,
-                            "subnetCount": 1
-                        }
-                    ]
-                },
-                {
-                    "id": 16,
-                    "host": "aspmx2.googlemail.com.",
-                    "children": [
-                        {
-                            "id": 8,
-                            "mechanism": "ip4",
-                            "value": "64.233.162.27",
-                            "rfc7208DnsCount": 1,
-                            "subnetCount": 1
-                        },
-                        {
-                            "id": 9,
-                            "mechanism": "ip6",
-                            "value": "2a00:1450:4010:c05::1b",
-                            "rfc7208DnsCount": 1,
-                            "subnetCount": 1
-                        }
-                    ]
-                },
-                {
-                    "id": 17,
-                    "host": "alt1.aspmx.l.google.com.",
-                    "children": [
-                        {
-                            "id": 10,
-                            "mechanism": "ip4",
-                            "value": "64.233.162.27",
-                            "rfc7208DnsCount": 1,
-                            "subnetCount": 1
-                        },
-                        {
-                            "id": 11,
-                            "mechanism": "ip6",
-                            "value": "2a00:1450:4010:c05::1a",
-                            "rfc7208DnsCount": 1,
-                            "subnetCount": 1
-                        }
-                    ]
-                }
-            ],
-            "rfc4408DnsCount": 1,
-            "rfc7208DnsCount": 1
-        },
-        {
-            "id": 18,
-            "qualifier": "+",
-            "mechanism": "include",
-            "value": "spf.mailjet.com",
-            "raw": "v=spf1 ip4:178.33.111.144 ip4:178.33.137.208/28 ip4:178.33.221.0/24 ip4:37.59.69.128/25 ip4:37.59.249.0/24 ip4:87.253.232.0/21 ip4:185.189.236.0/22 ?all",
-            "host": "spf.mailjet.com.",
-            "children": [
-                {
-                    "id": 19,
-                    "qualifier": "+",
-                    "mechanism": "ip4",
-                    "value": "178.33.111.144",
-                    "subnetCount": 1
-                },
-                {
-                    "id": 20,
-                    "qualifier": "+",
-                    "mechanism": "ip4",
-                    "value": "178.33.137.208/28",
-                    "subnetCount": 16
-                },
-                {
-                    "id": 21,
-                    "qualifier": "+",
-                    "mechanism": "ip4",
-                    "value": "178.33.221.0/24",
-                    "subnetCount": 256
-                },
-                {
-                    "id": 22,
-                    "qualifier": "+",
-                    "mechanism": "ip4",
-                    "value": "37.59.69.128/25",
-                    "subnetCount": 128
-                },
-                {
-                    "id": 23,
-                    "qualifier": "+",
-                    "mechanism": "ip4",
-                    "value": "37.59.249.0/24",
-                    "subnetCount": 256
-                },
-                {
-                    "id": 24,
-                    "qualifier": "+",
-                    "mechanism": "ip4",
-                    "value": "87.253.232.0/21",
-                    "subnetCount": 2048
-                },
-                {
-                    "id": 25,
-                    "qualifier": "+",
-                    "mechanism": "ip4",
-                    "value": "185.189.236.0/22",
-                    "subnetCount": 1024
-                },
-                {
-                    "id": 26,
-                    "qualifier": "?",
-                    "mechanism": "all"
-                }
-            ],
-            "rfc4408DnsCount": 1,
-            "rfc7208DnsCount": 1
-        },
-        {
-            "id": 27,
-            "qualifier": "+",
-            "mechanism": "include",
-            "value": "servers.mcsv.net",
-            "raw": "v=spf1 ip4:205.201.128.0/20 ip4:198.2.128.0/18 ip4:148.105.8.0/21 ?all",
-            "host": "servers.mcsv.net.",
-            "children": [
-                {
-                    "id": 28,
-                    "qualifier": "+",
-                    "mechanism": "ip4",
-                    "value": "205.201.128.0/20",
-                    "subnetCount": 4096
-                },
-                {
-                    "id": 29,
-                    "qualifier": "+",
-                    "mechanism": "ip4",
-                    "value": "198.2.128.0/18",
-                    "subnetCount": 16384
-                },
-                {
-                    "id": 30,
-                    "qualifier": "+",
-                    "mechanism": "ip4",
-                    "value": "148.105.8.0/21",
-                    "subnetCount": 2048
-                },
-                {
-                    "id": 31,
-                    "qualifier": "?",
-                    "mechanism": "all"
-                }
-            ],
-            "rfc4408DnsCount": 1,
-            "rfc7208DnsCount": 1
-        },
-        {
-            "id": 32,
-            "qualifier": "+",
-            "mechanism": "ip4",
-            "value": "109.168.127.160/27",
-            "subnetCount": 32
-        },
-        {
-            "id": 33,
-            "qualifier": "+",
-            "mechanism": "ip4",
-            "value": "212.31.252.64/27",
-            "subnetCount": 32
-        },
-        {
-            "id": 34,
-            "qualifier": "+",
-            "mechanism": "ip4",
-            "value": "212.77.68.6",
-            "subnetCount": 1
-        },
-        {
-            "id": 35,
-            "qualifier": "+",
-            "mechanism": "ip4",
-            "value": "62.212.1.160",
-            "subnetCount": 1
-        },
-        {
-            "id": 36,
-            "qualifier": "+",
-            "mechanism": "ip4",
-            "value": "62.212.0.160",
-            "subnetCount": 1
-        },
-        {
-            "id": 37,
-            "qualifier": "+",
-            "mechanism": "ip4",
-            "value": "93.94.32.0/21",
-            "subnetCount": 2048
-        },
-        {
-            "id": 38,
-            "qualifier": "+",
-            "mechanism": "ip4",
-            "value": "93.94.37.253",
-            "subnetCount": 1
-        },
-        {
-            "id": 39,
-            "qualifier": "+",
-            "mechanism": "ip4",
-            "value": "109.168.121.48/28",
-            "subnetCount": 16
-        },
-        {
-            "id": 40,
-            "qualifier": "+",
-            "mechanism": "ip4",
-            "value": "37.202.20.23/32",
-            "subnetCount": 1
-        },
-        {
-            "id": 41,
-            "qualifier": "+",
-            "mechanism": "ip4",
-            "value": "213.215.152.254/32",
-            "subnetCount": 1
-        },
-        {
-            "id": 42,
-            "qualifier": "+",
-            "mechanism": "ip4",
-            "value": "213.215.152.253/32",
-            "subnetCount": 1
-        },
-        {
-            "id": 43,
-            "qualifier": "+",
-            "mechanism": "ip4",
-            "value": "213.215.152.252/32",
-            "subnetCount": 1
-        },
-        {
-            "id": 44,
-            "qualifier": "+",
-            "mechanism": "ip4",
-            "value": "213.215.152.251/32",
-            "subnetCount": 1
-        },
-        {
-            "id": 45,
-            "qualifier": "+",
-            "mechanism": "ip4",
-            "value": "109.168.121.54/32",
-            "subnetCount": 1
-        },
-        {
-            "id": 46,
-            "qualifier": "+",
-            "mechanism": "ip4",
-            "value": "109.168.121.55/32",
-            "subnetCount": 1
-        },
-        {
-            "id": 47,
-            "qualifier": "+",
-            "mechanism": "ip4",
-            "value": "109.168.121.57/32",
-            "subnetCount": 1
-        },
-        {
-            "id": 48,
-            "qualifier": "+",
-            "mechanism": "ip4",
-            "value": "109.168.121.58/32",
-            "subnetCount": 1
-        },
-        {
-            "id": 49,
-            "qualifier": "-",
-            "mechanism": "all"
-        }
-    ]
+var SUBITO =  {
+		    "id": 1,
+		    "effectiveValue": "subito.it.",
+		    "raw": "v=spf1 mx:blocket.se include:spf.mailjet.com include:servers.mcsv.net ip4:109.168.127.160/27 ip4:212.31.252.64/27 ip4:212.77.68.6 ip4:62.212.1.160 ip4:62.212.0.160 ip4:93.94.32.0/21 ip4:93.94.37.253 ip4:109.168.121.48/28 ip4:37.202.20.23/32 ip4:213.215.152.254/32 ip4:213.215.152.253/32 ip4:213.215.152.252/32 ip4:213.215.152.251/32 ip4:109.168.121.54/32 ip4:109.168.121.55/32 ip4:109.168.121.57/32 ip4:109.168.121.58/32 -all",
+		    "children": [
+		        {
+		            "id": 2,
+		            "qualifier": "+",
+		            "mechanism": "mx",
+		            "value": "blocket.se",
+		            "effectiveValue": "blocket.se.",
+		            "children": [
+		                {
+		                    "id": 13,
+		                    "effectiveValue": "aspmx2.googlemail.com.",
+		                    "children": [
+		                        {
+		                            "id": 3,
+		                            "mechanism": "ip4",
+		                            "value": "64.233.161.26",
+		                            "effectiveValue": "64.233.161.26",
+		                            "rfc7208DnsCount": 1,
+		                            "subnetCount": 1
+		                        },
+		                        {
+		                            "id": 4,
+		                            "mechanism": "ip6",
+		                            "value": "2a00:1450:4010:c01::1b",
+		                            "effectiveValue": "2a00:1450:4010:c01::1b",
+		                            "rfc7208DnsCount": 1,
+		                            "subnetCount": 1
+		                        }
+		                    ]
+		                },
+		                {
+		                    "id": 14,
+		                    "effectiveValue": "alt2.aspmx.l.google.com.",
+		                    "children": [
+		                        {
+		                            "id": 5,
+		                            "mechanism": "ip6",
+		                            "value": "2404:6800:4003:c00::1a",
+		                            "effectiveValue": "2404:6800:4003:c00::1a",
+		                            "rfc7208DnsCount": 1,
+		                            "subnetCount": 1
+		                        },
+		                        {
+		                            "id": 9,
+		                            "mechanism": "ip4",
+		                            "value": "74.125.200.26",
+		                            "effectiveValue": "74.125.200.26",
+		                            "rfc7208DnsCount": 1,
+		                            "subnetCount": 1
+		                        }
+		                    ]
+		                },
+		                {
+		                    "id": 15,
+		                    "effectiveValue": "aspmx.l.google.com.",
+		                    "children": [
+		                        {
+		                            "id": 6,
+		                            "mechanism": "ip4",
+		                            "value": "64.233.184.26",
+		                            "effectiveValue": "64.233.184.26",
+		                            "rfc7208DnsCount": 1,
+		                            "subnetCount": 1
+		                        },
+		                        {
+		                            "id": 7,
+		                            "mechanism": "ip6",
+		                            "value": "2a00:1450:400c:c0a::1a",
+		                            "effectiveValue": "2a00:1450:400c:c0a::1a",
+		                            "rfc7208DnsCount": 1,
+		                            "subnetCount": 1
+		                        }
+		                    ]
+		                },
+		                {
+		                    "id": 16,
+		                    "effectiveValue": "aspmx3.googlemail.com.",
+		                    "children": [
+		                        {
+		                            "id": 8,
+		                            "mechanism": "ip6",
+		                            "value": "2404:6800:4003:c00::1b",
+		                            "effectiveValue": "2404:6800:4003:c00::1b",
+		                            "rfc7208DnsCount": 1,
+		                            "subnetCount": 1
+		                        },
+		                        {
+		                            "id": 10,
+		                            "mechanism": "ip4",
+		                            "value": "74.125.200.26",
+		                            "effectiveValue": "74.125.200.26",
+		                            "rfc7208DnsCount": 1,
+		                            "subnetCount": 1
+		                        }
+		                    ]
+		                },
+		                {
+		                    "id": 17,
+		                    "effectiveValue": "alt1.aspmx.l.google.com.",
+		                    "children": [
+		                        {
+		                            "id": 11,
+		                            "mechanism": "ip4",
+		                            "value": "64.233.161.26",
+		                            "effectiveValue": "64.233.161.26",
+		                            "rfc7208DnsCount": 1,
+		                            "subnetCount": 1
+		                        },
+		                        {
+		                            "id": 12,
+		                            "mechanism": "ip6",
+		                            "value": "2a00:1450:4010:c01::1a",
+		                            "effectiveValue": "2a00:1450:4010:c01::1a",
+		                            "rfc7208DnsCount": 1,
+		                            "subnetCount": 1
+		                        }
+		                    ]
+		                }
+		            ],
+		            "rfc4408DnsCount": 1,
+		            "rfc7208DnsCount": 1
+		        },
+		        {
+		            "id": 18,
+		            "qualifier": "+",
+		            "mechanism": "include",
+		            "value": "spf.mailjet.com",
+		            "effectiveValue": "spf.mailjet.com.",
+		            "raw": "v=spf1 ip4:178.33.111.144 ip4:178.33.137.208/28 ip4:178.33.221.0/24 ip4:37.59.69.128/25 ip4:37.59.249.0/24 ip4:87.253.232.0/21 ip4:185.189.236.0/22 ?all",
+		            "children": [
+		                {
+		                    "id": 19,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "178.33.111.144",
+		                    "effectiveValue": "178.33.111.144",
+		                    "subnetCount": 1
+		                },
+		                {
+		                    "id": 20,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "178.33.137.208/28",
+		                    "effectiveValue": "178.33.137.208/28",
+		                    "subnetCount": 16
+		                },
+		                {
+		                    "id": 21,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "178.33.221.0/24",
+		                    "effectiveValue": "178.33.221.0/24",
+		                    "subnetCount": 256
+		                },
+		                {
+		                    "id": 22,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "37.59.69.128/25",
+		                    "effectiveValue": "37.59.69.128/25",
+		                    "subnetCount": 128
+		                },
+		                {
+		                    "id": 23,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "37.59.249.0/24",
+		                    "effectiveValue": "37.59.249.0/24",
+		                    "subnetCount": 256
+		                },
+		                {
+		                    "id": 24,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "87.253.232.0/21",
+		                    "effectiveValue": "87.253.232.0/21",
+		                    "subnetCount": 2048
+		                },
+		                {
+		                    "id": 25,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "185.189.236.0/22",
+		                    "effectiveValue": "185.189.236.0/22",
+		                    "subnetCount": 1024
+		                },
+		                {
+		                    "id": 26,
+		                    "qualifier": "?",
+		                    "mechanism": "all"
+		                }
+		            ],
+		            "rfc4408DnsCount": 1,
+		            "rfc7208DnsCount": 1,
+		            "errors": [
+		                {
+		                    "error": "spf-unexpected-result-neutral"
+		                }
+		            ]
+		        },
+		        {
+		            "id": 27,
+		            "qualifier": "+",
+		            "mechanism": "include",
+		            "value": "servers.mcsv.net",
+		            "effectiveValue": "servers.mcsv.net.",
+		            "raw": "v=spf1 ip4:205.201.128.0/20 ip4:198.2.128.0/18 ip4:148.105.8.0/21 ?all",
+		            "children": [
+		                {
+		                    "id": 28,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "205.201.128.0/20",
+		                    "effectiveValue": "205.201.128.0/20",
+		                    "subnetCount": 4096
+		                },
+		                {
+		                    "id": 29,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "198.2.128.0/18",
+		                    "effectiveValue": "198.2.128.0/18",
+		                    "subnetCount": 16384
+		                },
+		                {
+		                    "id": 30,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "148.105.8.0/21",
+		                    "effectiveValue": "148.105.8.0/21",
+		                    "subnetCount": 2048
+		                },
+		                {
+		                    "id": 31,
+		                    "qualifier": "?",
+		                    "mechanism": "all"
+		                }
+		            ],
+		            "rfc4408DnsCount": 1,
+		            "rfc7208DnsCount": 1,
+		            "errors": [
+		                {
+		                    "error": "spf-unexpected-result-neutral"
+		                }
+		            ]
+		        },
+		        {
+		            "id": 32,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "109.168.127.160/27",
+		            "effectiveValue": "109.168.127.160/27",
+		            "subnetCount": 32
+		        },
+		        {
+		            "id": 33,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "212.31.252.64/27",
+		            "effectiveValue": "212.31.252.64/27",
+		            "subnetCount": 32
+		        },
+		        {
+		            "id": 34,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "212.77.68.6",
+		            "effectiveValue": "212.77.68.6",
+		            "subnetCount": 1
+		        },
+		        {
+		            "id": 35,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "62.212.1.160",
+		            "effectiveValue": "62.212.1.160",
+		            "subnetCount": 1
+		        },
+		        {
+		            "id": 36,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "62.212.0.160",
+		            "effectiveValue": "62.212.0.160",
+		            "subnetCount": 1
+		        },
+		        {
+		            "id": 37,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "93.94.32.0/21",
+		            "effectiveValue": "93.94.32.0/21",
+		            "subnetCount": 2048
+		        },
+		        {
+		            "id": 38,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "93.94.37.253",
+		            "effectiveValue": "93.94.37.253",
+		            "subnetCount": 1
+		        },
+		        {
+		            "id": 39,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "109.168.121.48/28",
+		            "effectiveValue": "109.168.121.48/28",
+		            "subnetCount": 16
+		        },
+		        {
+		            "id": 40,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "37.202.20.23/32",
+		            "effectiveValue": "37.202.20.23/32",
+		            "subnetCount": 1
+		        },
+		        {
+		            "id": 41,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "213.215.152.254/32",
+		            "effectiveValue": "213.215.152.254/32",
+		            "subnetCount": 1
+		        },
+		        {
+		            "id": 42,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "213.215.152.253/32",
+		            "effectiveValue": "213.215.152.253/32",
+		            "subnetCount": 1
+		        },
+		        {
+		            "id": 43,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "213.215.152.252/32",
+		            "effectiveValue": "213.215.152.252/32",
+		            "subnetCount": 1
+		        },
+		        {
+		            "id": 44,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "213.215.152.251/32",
+		            "effectiveValue": "213.215.152.251/32",
+		            "subnetCount": 1
+		        },
+		        {
+		            "id": 45,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "109.168.121.54/32",
+		            "effectiveValue": "109.168.121.54/32",
+		            "subnetCount": 1
+		        },
+		        {
+		            "id": 46,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "109.168.121.55/32",
+		            "effectiveValue": "109.168.121.55/32",
+		            "subnetCount": 1
+		        },
+		        {
+		            "id": 47,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "109.168.121.57/32",
+		            "effectiveValue": "109.168.121.57/32",
+		            "subnetCount": 1
+		        },
+		        {
+		            "id": 48,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "109.168.121.58/32",
+		            "effectiveValue": "109.168.121.58/32",
+		            "subnetCount": 1
+		        },
+		        {
+		            "id": 49,
+		            "qualifier": "-",
+		            "mechanism": "all"
+		        }
+		    ],
+        "connections" :  [
+		    {
+		        "from": 3,
+		        "to": 11,
+		        "overlapSubnetCount": 1,
+		        "fromSubnetCount": 0,
+		        "toSubnetCount": 0
+		    },
+		    {
+		        "from": 9,
+		        "to": 10,
+		        "overlapSubnetCount": 1,
+		        "fromSubnetCount": 0,
+		        "toSubnetCount": 0
+		    }
+		]
 };
 
   var DUDLEY = {
@@ -2218,7 +2281,7 @@ var CAMDEN = {
       if (d.data.mechanism === 'all') {
         return qualifierString(d.data.qualifier);
       }
-      var value = d.data.value ? ': ' + d.data.value : d.data.host ? d.data.host : '';
+      var value = d.data.value ? ': ' + d.data.value : d.data.effectiveValue ? d.data.effectiveValue : '';
 
       return (d.data.mechanism ? d.data.mechanism : value === '' ? '?' : '') + value;
     }
@@ -2227,17 +2290,17 @@ var CAMDEN = {
     var tree = d3_rs_tree.html('flare')
                     .theme(theme)
                     .label(label)
-                    .nodeRadius([7, 21])
+                    .nodeRadius([7, 20])
                     .nodeSymbol(function (d) { return d.data.name === 'cluster' ? triangle : circle})
                     .nameClass(function (d) {
                       return d.hasChildren ? 'default' : 'ip-addr';
                     });
     
-    var dataSet = CAMDEN;
+    var dataSet = SUBITO;
 
     var data = d3_rs_tree.mapChildren(dataSet, label);
     sortDefault();
-    data.collapse(1);
+    //data.collapse(1);
 
     function update(animated) {
       var svg = d3.select('#elm').datum(data);
