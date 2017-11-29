@@ -99,7 +99,7 @@ export function mapChildren(source, labelFn) {
   };
 
   data.collapse = (l) => {
-    l = l || 1;
+    l = l || 0;
     data.eachAfter(d => {
       if (d.depth >= l) {
         if (d.children) {
@@ -132,8 +132,28 @@ export function mapChildren(source, labelFn) {
     return i;
   }  
 
+  data.getOpenState = () => {
+    let state = {};
+    data.each(d => {
+      state[d.id] = (d.children != null);
+    });
+    return state;
+  }
 
-
+  data.openState = (state) => {
+    data.each(d => {
+      if (state[d.id] === true) {
+        if (d.children) return;
+        d.children = d._children;
+        d._children = null;
+      } else {
+        if (d._children) return;
+        d._children = d.children;
+        d.children = null;
+      }
+    });
+    return data;
+  }
 
   return data;
 }  
@@ -164,8 +184,16 @@ export default function trees(id) {
       return 2; // space between groups at same depth
     } 
     
+    if (a.children && b.children) {
+      return 5; // open children
+    }
+
+    if ((a.children || b.children) && (!a.hasChildren || !b.hasChildren)) {
+      return 6; 
+    }    
+
     if (a.children || b.children) {
-      return 6; // open children
+      return 3; 
     }
 
     if (a.hasChildren && b.hasChildren) {
@@ -314,9 +342,10 @@ export default function trees(id) {
           d.labelHidden = false; // always show labels for open nodes
           return;
         }
-        const open = her.countPeers(d, (d) => d.children);
+
+        const open = her.countPeers(d, (d) => d.children);     
         if (open == her.countPeers(d, (d) => d.hasChildren)) {
-          d.labelHidden = false; // always show labels is all nodes are open
+          d.labelHidden = false; // always show labels if all nodes are open
           return;
         }
         d.labelHidden = open > 0;

@@ -15,7 +15,7 @@
     }
     div#zoom {
       position: absolute;
-      left: 0;
+      right: 0;
       top: 0;
     }
     div#zoom button {
@@ -29,7 +29,6 @@
   </head>
   <body>
     <div id="options">
-      <button onclick="toggleTheme()">Theme</button>
       <button onclick="doSortId()">Sort: Mechanisms</button>  
       <button onclick="doSort('subnetCount')">Sort: Subnet Size</button>  
       <button onclick="doSort('rfc4408DnsCount')">Sort: DNS Lookups (RFC-4408)</button>  
@@ -37,8 +36,8 @@
     </div>
     <div id="elm">
           <div id="zoom">
-            <button onclick="doExpand()">+</button>   
-            <button onclick="doCollapse()">-</button>       
+            <button onclick="doExpandIncrement()">+</button>   
+            <button onclick="doCollapseDecrement()">-</button>       
           </div>
     </div>
         
@@ -2219,8 +2218,9 @@ var CAMDEN = {
       if (d.data.mechanism === 'all') {
         return qualifierString(d.data.qualifier);
       }
-      var mech = d.data.mechanism ? d.data.mechanism + ': ' : '';
-      return mech + (d.data.host || d.data.value || '?');
+      var value = d.data.value ? ': ' + d.data.value : d.data.host ? d.data.host : '';
+
+      return (d.data.mechanism ? d.data.mechanism : value === '' ? '?' : '') + value;
     }
 
     var theme = 'light';
@@ -2237,7 +2237,7 @@ var CAMDEN = {
 
     var data = d3_rs_tree.mapChildren(dataSet, label);
     sortDefault();
-    data.collapse();
+    data.collapse(1);
 
     function update(animated) {
       var svg = d3.select('#elm').datum(data);
@@ -2262,17 +2262,6 @@ var CAMDEN = {
 
     // -- buttons
 
-    function toggleTheme() {
-      if (theme === 'light') {
-        theme = 'dark';
-      } else {
-        theme = 'light';
-      }
-
-      tree.theme(theme);
-      update(true);
-    }
-
     function doCollapse() {
       data = data.collapse();
       update(true);
@@ -2282,15 +2271,48 @@ var CAMDEN = {
       data = data.expand();
       update(true);
     }
-    
+
+    function doCollapseDecrement() {
+      for (var i = data.height; i >= 0; i--) {
+        var c = data.countDepth(i, function(d) { return 1 })
+        if (c !== 0) {
+          i--;
+          break; // close this level
+        }
+      }
+      data = data.collapse(i);
+      update(true);
+    }
+
+    function doExpandIncrement() {
+      for (var i = 0; i < data.height; i++) {
+        var c = data.countDepth(i, function(d) { return d.hasChildren })
+        if (c === 0) break; // nothing to contine on
+
+        var o = data.countDepth(i, function(d) { return d.children })
+        if (o === 0 || c !== o) {
+          i++; // open next level, nothing or some are open
+          break; 
+        }
+
+        // has children, all open, continue
+      }
+      data = data.expand(i);
+      update(true);
+    }
+
     function sortDefault() {
-      data.sum(function (d) { return 0; })
+      var state = data.getOpenState();
+
+      data.expand()
+          .sum(function (d) { return 0; })
           .scale()
           .sort(function(a, b) { return b.height - a.height || a.id - b.id; })
           .sum(function (d) { 
             return d.children ? d.children.length + 1 : 1
           })
-          .scale();
+          .scale()
+          .openState(state);
     }
 
     function doSortId() {
@@ -2299,9 +2321,13 @@ var CAMDEN = {
     }
 
     function doSort(field) {
-      data.sum(function (d) { return d[field]; })
+      var state = data.getOpenState();
+
+      data.expand()
+          .sum(function (d) { return d[field]; })
           .scale()
-          .sort(function(a, b) { return b.height - a.height || b.value - a.value || a.id - b.id; });
+          .sort(function(a, b) { return b.height - a.height || b.value - a.value || a.id - b.id; })
+          .openState(state);
 
       update(true);
     }
