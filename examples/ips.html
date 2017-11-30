@@ -2309,7 +2309,7 @@ var CAMDEN = {
       {
         svg = svg.transition().duration(666);
       }  
-      svg.call(tree).select('svg').attr('overflow', 'visible'); //TODO: Move this into SVG
+      svg.call(tree);
     }
 
     tree.onClick(function (d) {

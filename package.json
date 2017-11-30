@@ -30,7 +30,7 @@
     "prepublish": "npm run build"
   },
   "dependencies": {
-    "@redsift/d3-rs-svg": "~0.2.5",
+    "@redsift/d3-rs-svg": "~0.3.0",
     "@redsift/d3-rs-theme": "~0.4.2",
     "d3-array": "^1.2.1",
     "d3-hierarchy": "^1.1.5",

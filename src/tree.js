@@ -316,7 +316,10 @@ export default function trees(id) {
       let sid = null;
       if (id) sid = 'svg-' + id;
 
-      let root = svg(sid).width(width).height(sh).margin(margin).scale(scale).background(_background);
+      let root = svg(sid)
+                  .width(width).height(sh).margin(margin).scale(scale)
+                  .background(_background)
+                  .overflow(true);
       let tnode = node;
       if (transition === true) {
         tnode = node.transition(context);
