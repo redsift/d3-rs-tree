@@ -2518,9 +2518,9 @@ var CAMDEN = {
       if (d.data.mechanism === 'all') {
         return qualifierString(d.data.qualifier);
       }
-      var value = d.data.value ? ': ' + d.data.value : d.data.effectiveValue ? d.data.effectiveValue : '';
+      var value = d.data.value ? d.data.value : d.data.effectiveValue ? d.data.effectiveValue : '';
 
-      return (d.data.mechanism ? d.data.mechanism : value === '' ? '?' : '') + value;
+      return (d.data.mechanism ? d.data.mechanism + ': ' : value === '' ? '?' : '') + value;
     }
 
     var theme = 'light';
