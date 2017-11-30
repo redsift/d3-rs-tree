@@ -7,6 +7,7 @@ import { symbol, symbolCircle } from 'd3-shape';
 
 import { html as svg } from '@redsift/d3-rs-svg';
 import { 
+  presentation10,
   brand,
   display,
   dashes,
@@ -14,17 +15,19 @@ import {
   widths
 } from '@redsift/d3-rs-theme';
 
+const COLOR_ERROR = presentation10.standard[presentation10.names.orange]
 const DEFAULT_SIZE = 800;
 const DEFAULT_ASPECT = 1.0;
-const DEFAULT_MARGIN = 16;
+const DEFAULT_MARGIN = 32;
 const DEFAULT_TEXT_SCALE = 8.39; // hack value to do fast estimation of length of string
 const DEFAULT_NODE_RADIUS = 5.0;
 const TINY = 1e-6;
+const SMALL = 1e-1;
 const HUGE = 1e6;
 const DEFAULT_TEXT_PADDING = 5;
 const DEFAULT_PIXELS_PER_NODE = 35;
-const CONNECTION_CURVE = 0.55;
-const CONNECTION_SELF_RADIUS = 50;
+const CONNECTION_CURVE = 0.51;
+const CONNECTION_SELF_RADIUS = 21;
 
 // Creates a curved (diagonal) path from parent to the child nodes
 function diagonal(s, d) {
@@ -52,9 +55,9 @@ function arc(s, d) {
     dr = CONNECTION_SELF_RADIUS;
   }
 
-  return `M ${s.y} ${s.x}
-  A ${dr}, ${dr} 0 0, 1
-    ${d.y} ${d.x}`;
+  return `M ${s.y} ${s.x-SMALL}
+  A ${dr}, ${dr} 0 1, 1
+    ${d.y} ${d.x+SMALL}`;
 }
 
 export function mapChildren(source, labelFn) {
@@ -597,7 +600,7 @@ export default function trees(id) {
 
                   ${_impl.self()} .connection {
                     fill: none;
-                    stroke: ${display[_theme].grid};
+                    stroke: ${COLOR_ERROR};
                     stroke-width: ${widths.grid*2};
                     stroke-dasharray: ${dashes.grid}
                   }
