@@ -554,8 +554,9 @@ var SUBITO =  {
 		            "qualifier": "-",
 		            "mechanism": "all"
 		        }
-		    ],
-        "connections" :  [
+            ]
+};
+const SUBITO_CONNECTIONS =  [
 		    {
 		        "from": 3,
 		        "to": 11,
@@ -571,7 +572,7 @@ var SUBITO =  {
 		        "toSubnetCount": 0
 		    }
 		]
-};
+;
 
   var DUDLEY = {
     "id": 1,
@@ -2297,14 +2298,15 @@ var CAMDEN = {
                     });
     
     var dataSet = SUBITO;
-
+    dataSet.connections = SUBITO_CONNECTIONS;
     var data = d3_rs_tree.mapChildren(dataSet, label);
     sortDefault();
     //data.collapse(1);
 
     function update(animated) {
       var svg = d3.select('#elm').datum(data);
-      if (animated) {
+      if (animated) 
+      {
         svg = svg.transition().duration(666);
       }  
       svg.call(tree).select('svg').attr('overflow', 'visible'); //TODO: Move this into SVG

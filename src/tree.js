@@ -23,6 +23,8 @@ const TINY = 1e-6;
 const HUGE = 1e6;
 const DEFAULT_TEXT_PADDING = 5;
 const DEFAULT_PIXELS_PER_NODE = 35;
+const CONNECTION_CURVE = 0.55;
+const CONNECTION_SELF_RADIUS = 50;
 
 // Creates a curved (diagonal) path from parent to the child nodes
 function diagonal(s, d) {
@@ -33,13 +35,52 @@ function diagonal(s, d) {
   return `M ${s.y} ${s.x}
   C ${(s.y + d.y) / 2} ${s.x},
     ${(s.y + d.y) / 2} ${d.x},
-    ${d.y} ${d.x}`
+    ${d.y} ${d.x}`;
 }
+
+function arc(s, d) {
+  if (s.x == null || s.y == null || d.x == null || d.y == null) {
+    return ''
+  }
+
+  const dx = d.x - s.x,
+        dy = d.y - s.y;
+
+  let dr = Math.sqrt(dx * dx + dy * dy) * CONNECTION_CURVE;
+
+  if (dr === 0) {
+    dr = CONNECTION_SELF_RADIUS;
+  }
+
+  return `M ${s.y} ${s.x}
+  A ${dr}, ${dr} 0 0, 1
+    ${d.y} ${d.x}`;
+}
+
 export function mapChildren(source, labelFn) {
   labelFn = labelFn || (d => d.data.name)
 
   let data = hierarchy(source);
+  let all = {};
+  hierarchy(source, d => d.children || d._children).each(d1h => {
+    const d1 = d1h.data;
+
+    let ids = all[d1.id] || [];
+
+    const pop = (n) => {
+      if (n == null) {
+        return;
+      }
+      ids.push(n.data.id);
+      pop(n.parent)
+    };
+    pop(d1h);
+
+    all[d1.id] = ids;
+  });
   
+  data.hierarchy = all;
+
   let maxS = 0;
   let i = 0xffff;
 
@@ -260,9 +301,7 @@ export default function trees(id) {
           if (n.children && n.children.length > 0) {
               if (levelWidth.length <= level + 1) levelWidth.push(0);
               levelWidth[level + 1] += n.children.length;
-              n.children.forEach(function(d) {
-                  childCount(level + 1, d);
-              });
+              n.children.forEach((d) => childCount(level + 1, d));
             }
         }
         childCount(0, her);
@@ -357,7 +396,7 @@ export default function trees(id) {
       // Enter any new nodes at the parent's previous position.
       let nodeEnter = gNode.enter().append('g')
           .attr('class', 'node')
-          .attr('transform', d => `translate(${d.y},${d.x})`);
+          .attr('transform', d => `translate(${d.parent ? d.parent.y : her.y},${d.parent ? d.parent.x : her.x})`);
       
       nodeEnter.append('path').attr('d', d => _nodeSymbol(d).size(TINY)(d)); // TINY
     
@@ -447,40 +486,71 @@ export default function trees(id) {
                 };
           return diagonal(o, o);
         })
+        .style('stroke-opacity', TINY)
         .remove();
 
 
-      let connection = g.selectAll('path.connections').data(her.data.connections, (d, i) => d.from.id || i);
-      let connectionEnter = connection.enter().insert('path', 'g')
-      .attr('class', 'connection')
-      .attr('d', d => {
+      let connection = g.selectAll('path.connection').data(her.data.connections || [], (d) => {
 
-        let from = null,
-            to = null;
+        const closest = (id) => {
+          const h = her.hierarchy[id] || [];
+          let search = null;          
+          h.some(tid => {
+            nodes[0].each(e => {
+              if (e.id === tid) {
+                search = e;
+              }
+            });
 
-        nodes[0].each(e => {
-          if (e.id === d.from) {
-            from = e;
-          }
-          if (e.id === d.to) {
-            to = e;
-          }
-        });
+            return search != null;
+          });
 
-        console.log(from, to);
+          return search;
+        };
 
-        if (from == null || to == null) return '';
+        let from = closest(d.from),
+            to = closest(d.to);
 
-        let o = {
+        // catch all
+        from = from || nodes[0];
+        to = to || nodes[0];
+
+        d.fromXY = {
           x: from.x, 
           y: from.y
         };
-        let t = {
+
+        d.toXY = {
           x: to.x, 
           y: to.y
         };
-        return diagonal(o, t)
-      });        
+
+        return `${d.from}:${d.to}`
+      });
+
+      let connectionEnter = connection.enter().insert('path', 'g')
+      .attr('class', 'connection')
+      .attr('d', (d) => arc(d.fromXY, d.fromXY))
+      //.style('stroke-opacity', TINY);
+
+      // UPDATE
+      let connectionUpdate = connectionEnter.merge(connection);
+      if (transition === true) {
+        connectionUpdate = connectionUpdate.transition(context);
+      }
+
+      // Transition back to the parent element position
+      connectionUpdate.attr('d', (d) => arc(d.fromXY, d.toXY))
+      .style('stroke-opacity', 1.0);   
+
+      let connectionExit = connection.exit();
+      if (transition === true) {
+        connectionExit = connectionExit.transition(context);
+      }
+
+      connectionExit.attr('d', d => arc(d.fromXY, d.fromXY))
+        .style('stroke-opacity', TINY)
+        .remove();      
 
       // Store the old positions for transition.
       nodes.forEach(d => {
@@ -527,8 +597,8 @@ export default function trees(id) {
 
                   ${_impl.self()} .connection {
                     fill: none;
-                    stroke: ${display[_theme].axis};
-                    stroke-width: ${widths.grid};
+                    stroke: ${display[_theme].grid};
+                    stroke-width: ${widths.grid*2};
                     stroke-dasharray: ${dashes.grid}
                   }
 
