@@ -27,7 +27,8 @@ const HUGE = 1e6;
 const DEFAULT_TEXT_PADDING = 5;
 const DEFAULT_PIXELS_PER_NODE = 35;
 const CONNECTION_CURVE = 0.51;
-const CONNECTION_SELF_RADIUS = 21;
+const CONNECTION_SELF_RADIUS = 12;
+const CONNECTION_MAX_RADIUS = 20;
 
 // Creates a curved (diagonal) path from parent to the child nodes
 function diagonal(s, d) {
@@ -51,13 +52,25 @@ function arc(s, d) {
 
   let dr = Math.sqrt(dx * dx + dy * dy) * CONNECTION_CURVE;
 
-  if (dr === 0) {
+  if (dr < CONNECTION_SELF_RADIUS) {
     dr = CONNECTION_SELF_RADIUS;
+  } else if (dr > CONNECTION_MAX_RADIUS) {
+    dr = CONNECTION_MAX_RADIUS;
   }
 
-  return `M ${s.y} ${s.x-SMALL}
+  let a = s,
+      b = d;
+  
+  let dir = s.right ? 1 : -1;
+  if (dir*dx > 0) {
+    let t = a;
+    a = b;
+    b = t;
+  }
+  
+  return `M ${a.y} ${a.x+SMALL*dir}
   A ${dr}, ${dr} 0 1, 1
-    ${d.y} ${d.x+SMALL}`;
+    ${b.y} ${b.x-SMALL*dir}`;
 }
 
 export function mapChildren(source, labelFn) {
@@ -523,12 +536,14 @@ export default function trees(id) {
 
         d.fromXY = {
           x: from.x, 
-          y: from.y
+          y: from.y,
+          right: !from.hasChildren
         };
 
         d.toXY = {
           x: to.x, 
-          y: to.y
+          y: to.y,
+          right: !to.hasChildren
         };
 
         return `${d.from}:${d.to}`
