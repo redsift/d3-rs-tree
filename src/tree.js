@@ -233,7 +233,7 @@ export default function trees(id) {
   // Seperation function could be custom    
   const separation = (a, b) => {
     if (a.parent !== b.parent) {
-      return 2; // space between groups at same depth
+      return 2.5; // space between groups at same depth
     } 
     
     if (a.children && b.children) {
@@ -249,10 +249,10 @@ export default function trees(id) {
     }
 
     if (a.hasChildren && b.hasChildren) {
-      return 2; // will open out but has not yet
+      return 2.5; // will open out but has not yet
     }
 
-    return 1;
+    return 2;
   }
       
   function _impl(context) {
