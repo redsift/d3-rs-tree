@@ -24,6 +24,7 @@ const DEFAULT_NODE_RADIUS = 5.0;
 const TINY = 1e-6;
 const SMALL = 1e-1;
 const HUGE = 1e6;
+const MED = 3;
 const DEFAULT_TEXT_PADDING = 5;
 const DEFAULT_PIXELS_PER_NODE = 35;
 const CONNECTION_CURVE = 0.51;
@@ -68,9 +69,9 @@ function arc(s, d) {
     b = t;
   }
   
-  return `M ${a.y} ${a.x+SMALL*dir}
+  return `M ${a.y+SMALL} ${a.x+SMALL*dir}
   A ${dr}, ${dr} 0 1, 1
-    ${b.y} ${b.x-SMALL*dir}`;
+    ${b.y+SMALL} ${b.x-SMALL*dir}`;
 }
 
 export function mapChildren(source, labelFn) {
@@ -228,7 +229,8 @@ export default function trees(id) {
       nodeFill = null,
       nodeClass = null,
       nameClass = null,
-      label = null;
+      label = null, 
+      badge = null;
   
   // Seperation function could be custom    
   const separation = (a, b) => {
@@ -271,6 +273,13 @@ export default function trees(id) {
       _label = () => label;
     }
 
+    let _badge = badge;
+    if (_badge == null) {
+      _badge = () => null;
+    } else if (typeof(_badge) !== 'function') {
+      _badge = () => badge;
+    }    
+
     let _nodeClass = nodeClass;
     if (_nodeClass == null) {
       _nodeClass = (d) => d.hasChildren ? 'interactive' : null;
@@ -287,7 +296,7 @@ export default function trees(id) {
     
     let _nodeFill = nodeFill;
     if (_nodeFill == null) {
-      _nodeFill = (d) => d.children || d.hasChildren ? brand.standard[brand.names.green] : null;
+      _nodeFill = (d) => d.hasChildren ? brand.standard[brand.names.green] : null;
     } else if (typeof(_nodeFill) !== 'function') {
       _nodeFill = () => nodeFill;
     }
@@ -402,6 +411,7 @@ export default function trees(id) {
           return;
         }
         d.labelHidden = open > 0;
+        console.log(open, d.data.value);
       });
 
       let treeData = trees(her);
@@ -417,13 +427,23 @@ export default function trees(id) {
           .attr('class', 'node')
           .attr('transform', d => `translate(${d.parent ? d.parent.y : her.y},${d.parent ? d.parent.x : her.x})`);
       
-      nodeEnter.append('path').attr('d', d => _nodeSymbol(d).size(TINY)(d)); // TINY
+      nodeEnter.append('path')
+        .attr('d', d => _nodeSymbol(d).size(TINY)(d)); // TINY
     
       nodeEnter.append('text')
+          .attr('class', 'label')
           .attr('dy', d => d.id == 1 ? maxNodeRadius(d) : 0)
-          .attr('alignment-baseline', d => d.id == 1 ? 'text-before-edge' : 'middle')
+          .attr('dominant-baseline', d => d.id == 1 ? 'text-before-edge' : 'middle')
           .attr('text-anchor', d => d.id == 1 ? 'start' : d.children || d.hasChildren ? 'end' : 'start')
           .text(_label)
+          .style('fill-opacity', TINY);
+
+      nodeEnter.append('text')
+          .attr('class', 'badge')
+          .attr('dominant-baseline', 'ideographic')        
+          .attr('dy', -DEFAULT_TEXT_PADDING)
+          .attr('text-anchor', 'end')
+          .text(_badge)
           .style('fill-opacity', TINY);
     
       // Transition nodes to their new position.
@@ -445,11 +465,18 @@ export default function trees(id) {
           .attr('class', _nodeClass)
           .style('fill', _nodeFill);
     
-      nodeUpdate.select('text')
-          .text(_label) // not abosutely required
-          .attr('x', d => d.id == 1 ? 0 : d.hasChildren ? -_nodeRadius(d) : maxNodeRadius() + DEFAULT_TEXT_PADDING)
-          .attr('class', _nameClass)
+      nodeUpdate.select('text.label')
+          .attr('dx', d => d.id == 1 ? 0 : d.hasChildren ? -(_nodeRadius(d) + DEFAULT_TEXT_PADDING) : maxNodeRadius() + DEFAULT_TEXT_PADDING)
+          .attr('class', d => {
+            const c = _nameClass(d) || '';
+            return 'label ' + c;
+          })
           .style('fill-opacity', d => d.labelHidden ? TINY : 1.0);
+
+      nodeUpdate.select('text.badge')
+          .attr('dx', d => -(_nodeRadius(d) + DEFAULT_TEXT_PADDING))  
+          .text(_badge)
+          .style('fill-opacity', 1.0);      
     
       // Transition exiting nodes to the parent's new position.
       let nodeExit = gNode.exit();
@@ -473,6 +500,7 @@ export default function trees(id) {
       // Enter any new links at the parent's previous position.
       let linkEnter = link.enter().insert('path', 'g')
           .attr('class', 'link')
+          .attr('fill', 'none')
           .attr('d', d => {
             let o = {
               x: d.parent ? d.parent.x0 : her.x0, 
@@ -551,6 +579,7 @@ export default function trees(id) {
 
       let connectionEnter = connection.enter().insert('path', 'g')
       .attr('class', 'connection')
+      .attr('fill', 'none')
       .attr('d', (d) => arc(d.fromXY, d.fromXY))
       //.style('stroke-opacity', TINY);
 
@@ -598,7 +627,9 @@ export default function trees(id) {
                     font-weight: ${fonts.variable.weightColor};  
                     fill: ${display[_theme].text}                
                   }
-
+                  ${_impl.self()} text.badge {
+                    cursor: default;                  
+                  }
                   ${_impl.self()} .node path {
                     fill: ${display[_theme].background};
                     stroke: ${display[_theme].axis};
@@ -701,5 +732,9 @@ export default function trees(id) {
     return arguments.length ? (label = value, _impl) : label;
   }; 
 
+  _impl.badge = function(value) {
+    return arguments.length ? (badge = value, _impl) : badge;
+  }; 
+  
   return _impl;
 }

@@ -24,6 +24,13 @@
     text.ip-addr {
       font-family: "Source Code Pro", Consolas, "Liberation Mono", Menlo, Courier, monospace;
     }
+    text.badge {
+      font-family: "Source Code Pro", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+      font-weight: 500;  
+      fill: #aaa;
+      font-size: 0.75em;
+    }
+
 
     </style> 
   </head>
@@ -2523,6 +2530,546 @@ var CAMDEN = {
     ]
 }
 
+var CITY = {
+		    "id": 1,
+		    "effectiveValue": "city.ac.uk.",
+		    "raw": "v=spf1 include:spf.protection.outlook.com include:spf.messagelabs.com include:spf.city.ac.uk ip4:213.206.140.0/22 ip4:82.195.160.0/22 ~all",
+		    "children": [
+		        {
+		            "id": 2,
+		            "qualifier": "+",
+		            "mechanism": "include",
+		            "value": "spf.protection.outlook.com",
+		            "effectiveValue": "spf.protection.outlook.com.",
+		            "raw": "v=spf1 ip4:207.46.101.128/26 ip4:207.46.100.0/24 ip4:207.46.163.0/24 ip4:65.55.169.0/24 ip4:157.56.110.0/23 ip4:157.55.234.0/24 ip4:213.199.154.0/24 ip4:213.199.180.128/26 include:spfa.protection.outlook.com -all",
+		            "children": [
+		                {
+		                    "id": 3,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "207.46.101.128/26",
+		                    "effectiveValue": "207.46.101.128/26",
+		                    "subnetCount": 62,
+		                    "subnetBits": 6
+		                },
+		                {
+		                    "id": 4,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "207.46.100.0/24",
+		                    "effectiveValue": "207.46.100.0/24",
+		                    "subnetCount": 254,
+		                    "subnetBits": 8
+		                },
+		                {
+		                    "id": 5,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "207.46.163.0/24",
+		                    "effectiveValue": "207.46.163.0/24",
+		                    "subnetCount": 254,
+		                    "subnetBits": 8
+		                },
+		                {
+		                    "id": 6,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "65.55.169.0/24",
+		                    "effectiveValue": "65.55.169.0/24",
+		                    "subnetCount": 254,
+		                    "subnetBits": 8
+		                },
+		                {
+		                    "id": 7,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "157.56.110.0/23",
+		                    "effectiveValue": "157.56.110.0/23",
+		                    "subnetCount": 510,
+		                    "subnetBits": 9
+		                },
+		                {
+		                    "id": 8,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "157.55.234.0/24",
+		                    "effectiveValue": "157.55.234.0/24",
+		                    "subnetCount": 254,
+		                    "subnetBits": 8
+		                },
+		                {
+		                    "id": 9,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "213.199.154.0/24",
+		                    "effectiveValue": "213.199.154.0/24",
+		                    "subnetCount": 254,
+		                    "subnetBits": 8
+		                },
+		                {
+		                    "id": 10,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "213.199.180.128/26",
+		                    "effectiveValue": "213.199.180.128/26",
+		                    "subnetCount": 62,
+		                    "subnetBits": 6
+		                },
+		                {
+		                    "id": 11,
+		                    "qualifier": "+",
+		                    "mechanism": "include",
+		                    "value": "spfa.protection.outlook.com",
+		                    "effectiveValue": "spfa.protection.outlook.com.",
+		                    "raw": "v=spf1 ip4:157.56.112.0/24 ip4:207.46.51.64/26 ip4:157.55.158.0/23 ip4:64.4.22.64/26 ip4:40.92.0.0/14 ip4:40.107.0.0/17 ip4:40.107.128.0/17 ip4:134.170.140.0/24 include:spfb.protection.outlook.com ip6:2001:489a:2202::/48 -all",
+		                    "children": [
+		                        {
+		                            "id": 12,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "157.56.112.0/24",
+		                            "effectiveValue": "157.56.112.0/24",
+		                            "subnetCount": 254,
+		                            "subnetBits": 8
+		                        },
+		                        {
+		                            "id": 13,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "207.46.51.64/26",
+		                            "effectiveValue": "207.46.51.64/26",
+		                            "subnetCount": 62,
+		                            "subnetBits": 6
+		                        },
+		                        {
+		                            "id": 14,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "157.55.158.0/23",
+		                            "effectiveValue": "157.55.158.0/23",
+		                            "subnetCount": 510,
+		                            "subnetBits": 9
+		                        },
+		                        {
+		                            "id": 15,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "64.4.22.64/26",
+		                            "effectiveValue": "64.4.22.64/26",
+		                            "subnetCount": 62,
+		                            "subnetBits": 6
+		                        },
+		                        {
+		                            "id": 16,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "40.92.0.0/14",
+		                            "effectiveValue": "40.92.0.0/14",
+		                            "subnetCount": 262142,
+		                            "subnetBits": 18
+		                        },
+		                        {
+		                            "id": 17,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "40.107.0.0/17",
+		                            "effectiveValue": "40.107.0.0/17",
+		                            "subnetCount": 32766,
+		                            "subnetBits": 15
+		                        },
+		                        {
+		                            "id": 18,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "40.107.128.0/17",
+		                            "effectiveValue": "40.107.128.0/17",
+		                            "subnetCount": 32766,
+		                            "subnetBits": 15
+		                        },
+		                        {
+		                            "id": 19,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "134.170.140.0/24",
+		                            "effectiveValue": "134.170.140.0/24",
+		                            "subnetCount": 254,
+		                            "subnetBits": 8
+		                        },
+		                        {
+		                            "id": 20,
+		                            "qualifier": "+",
+		                            "mechanism": "include",
+		                            "value": "spfb.protection.outlook.com",
+		                            "effectiveValue": "spfb.protection.outlook.com.",
+		                            "raw": "v=spf1 ip6:2a01:111:f400::/48 ip4:23.103.128.0/19 ip4:23.103.198.0/23 ip4:65.55.88.0/24 ip4:104.47.0.0/17 ip4:23.103.200.0/21 ip4:23.103.208.0/21 ip4:23.103.191.0/24 ip4:216.32.180.0/23 ip4:94.245.120.64/26 -all",
+		                            "children": [
+		                                {
+		                                    "id": 21,
+		                                    "qualifier": "+",
+		                                    "mechanism": "ip6",
+		                                    "value": "2a01:111:f400::/48",
+		                                    "effectiveValue": "2a01:111:f400::/48",
+		                                    "subnetCount": 18446744073709551615,
+		                                    "subnetBits": 80
+		                                },
+		                                {
+		                                    "id": 22,
+		                                    "qualifier": "+",
+		                                    "mechanism": "ip4",
+		                                    "value": "23.103.128.0/19",
+		                                    "effectiveValue": "23.103.128.0/19",
+		                                    "subnetCount": 8190,
+		                                    "subnetBits": 13
+		                                },
+		                                {
+		                                    "id": 23,
+		                                    "qualifier": "+",
+		                                    "mechanism": "ip4",
+		                                    "value": "23.103.198.0/23",
+		                                    "effectiveValue": "23.103.198.0/23",
+		                                    "subnetCount": 510,
+		                                    "subnetBits": 9
+		                                },
+		                                {
+		                                    "id": 24,
+		                                    "qualifier": "+",
+		                                    "mechanism": "ip4",
+		                                    "value": "65.55.88.0/24",
+		                                    "effectiveValue": "65.55.88.0/24",
+		                                    "subnetCount": 254,
+		                                    "subnetBits": 8
+		                                },
+		                                {
+		                                    "id": 25,
+		                                    "qualifier": "+",
+		                                    "mechanism": "ip4",
+		                                    "value": "104.47.0.0/17",
+		                                    "effectiveValue": "104.47.0.0/17",
+		                                    "subnetCount": 32766,
+		                                    "subnetBits": 15
+		                                },
+		                                {
+		                                    "id": 26,
+		                                    "qualifier": "+",
+		                                    "mechanism": "ip4",
+		                                    "value": "23.103.200.0/21",
+		                                    "effectiveValue": "23.103.200.0/21",
+		                                    "subnetCount": 2046,
+		                                    "subnetBits": 11
+		                                },
+		                                {
+		                                    "id": 27,
+		                                    "qualifier": "+",
+		                                    "mechanism": "ip4",
+		                                    "value": "23.103.208.0/21",
+		                                    "effectiveValue": "23.103.208.0/21",
+		                                    "subnetCount": 2046,
+		                                    "subnetBits": 11
+		                                },
+		                                {
+		                                    "id": 28,
+		                                    "qualifier": "+",
+		                                    "mechanism": "ip4",
+		                                    "value": "23.103.191.0/24",
+		                                    "effectiveValue": "23.103.191.0/24",
+		                                    "subnetCount": 254,
+		                                    "subnetBits": 8
+		                                },
+		                                {
+		                                    "id": 29,
+		                                    "qualifier": "+",
+		                                    "mechanism": "ip4",
+		                                    "value": "216.32.180.0/23",
+		                                    "effectiveValue": "216.32.180.0/23",
+		                                    "subnetCount": 510,
+		                                    "subnetBits": 9
+		                                },
+		                                {
+		                                    "id": 30,
+		                                    "qualifier": "+",
+		                                    "mechanism": "ip4",
+		                                    "value": "94.245.120.64/26",
+		                                    "effectiveValue": "94.245.120.64/26",
+		                                    "subnetCount": 62,
+		                                    "subnetBits": 6
+		                                },
+		                                {
+		                                    "id": 31,
+		                                    "qualifier": "-",
+		                                    "mechanism": "all"
+		                                }
+		                            ],
+		                            "rfc4408DnsCount": 1,
+		                            "rfc7208DnsCount": 1
+		                        },
+		                        {
+		                            "id": 32,
+		                            "qualifier": "+",
+		                            "mechanism": "ip6",
+		                            "value": "2001:489a:2202::/48",
+		                            "effectiveValue": "2001:489a:2202::/48",
+		                            "subnetCount": 18446744073709551615,
+		                            "subnetBits": 80
+		                        },
+		                        {
+		                            "id": 33,
+		                            "qualifier": "-",
+		                            "mechanism": "all"
+		                        }
+		                    ],
+		                    "rfc4408DnsCount": 1,
+		                    "rfc7208DnsCount": 1
+		                },
+		                {
+		                    "id": 34,
+		                    "qualifier": "-",
+		                    "mechanism": "all"
+		                }
+		            ],
+		            "rfc4408DnsCount": 1,
+		            "rfc7208DnsCount": 1
+		        },
+		        {
+		            "id": 35,
+		            "qualifier": "+",
+		            "mechanism": "include",
+		            "value": "spf.messagelabs.com",
+		            "effectiveValue": "spf.messagelabs.com.",
+		            "raw": "v=spf1 include:nets1.spf.messagelabs.com include:nets2.spf.messagelabs.com ~all",
+		            "children": [
+		                {
+		                    "id": 36,
+		                    "qualifier": "+",
+		                    "mechanism": "include",
+		                    "value": "nets1.spf.messagelabs.com",
+		                    "effectiveValue": "nets1.spf.messagelabs.com.",
+		                    "raw": "v=spf1 ip4:85.158.136.0/21 ip4:193.109.254.0/23 ip4:194.106.220.0/23 ip4:195.245.230.0/23 ip4:95.131.104.0/21 ip4:46.226.48.0/21 ip4:196.14.170.0/23",
+		                    "children": [
+		                        {
+		                            "id": 37,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "85.158.136.0/21",
+		                            "effectiveValue": "85.158.136.0/21",
+		                            "subnetCount": 2046,
+		                            "subnetBits": 11
+		                        },
+		                        {
+		                            "id": 38,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "193.109.254.0/23",
+		                            "effectiveValue": "193.109.254.0/23",
+		                            "subnetCount": 510,
+		                            "subnetBits": 9
+		                        },
+		                        {
+		                            "id": 39,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "194.106.220.0/23",
+		                            "effectiveValue": "194.106.220.0/23",
+		                            "subnetCount": 510,
+		                            "subnetBits": 9
+		                        },
+		                        {
+		                            "id": 40,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "195.245.230.0/23",
+		                            "effectiveValue": "195.245.230.0/23",
+		                            "subnetCount": 510,
+		                            "subnetBits": 9
+		                        },
+		                        {
+		                            "id": 41,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "95.131.104.0/21",
+		                            "effectiveValue": "95.131.104.0/21",
+		                            "subnetCount": 2046,
+		                            "subnetBits": 11
+		                        },
+		                        {
+		                            "id": 42,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "46.226.48.0/21",
+		                            "effectiveValue": "46.226.48.0/21",
+		                            "subnetCount": 2046,
+		                            "subnetBits": 11
+		                        },
+		                        {
+		                            "id": 43,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "196.14.170.0/23",
+		                            "effectiveValue": "196.14.170.0/23",
+		                            "subnetCount": 510,
+		                            "subnetBits": 9
+		                        }
+		                    ],
+		                    "rfc4408DnsCount": 1,
+		                    "rfc7208DnsCount": 1,
+		                    "errors": [
+		                        {
+		                            "error": "spf-unexpected-result-neutral"
+		                        }
+		                    ]
+		                },
+		                {
+		                    "id": 44,
+		                    "qualifier": "+",
+		                    "mechanism": "include",
+		                    "value": "nets2.spf.messagelabs.com",
+		                    "effectiveValue": "nets2.spf.messagelabs.com.",
+		                    "raw": "v=spf1 ip4:216.82.240.0/20 ip4:67.219.240.0/20 ip4:117.120.16.0/21 ip4:103.9.96.0/22",
+		                    "children": [
+		                        {
+		                            "id": 45,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "216.82.240.0/20",
+		                            "effectiveValue": "216.82.240.0/20",
+		                            "subnetCount": 4094,
+		                            "subnetBits": 12
+		                        },
+		                        {
+		                            "id": 46,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "67.219.240.0/20",
+		                            "effectiveValue": "67.219.240.0/20",
+		                            "subnetCount": 4094,
+		                            "subnetBits": 12
+		                        },
+		                        {
+		                            "id": 47,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "117.120.16.0/21",
+		                            "effectiveValue": "117.120.16.0/21",
+		                            "subnetCount": 2046,
+		                            "subnetBits": 11
+		                        },
+		                        {
+		                            "id": 48,
+		                            "qualifier": "+",
+		                            "mechanism": "ip4",
+		                            "value": "103.9.96.0/22",
+		                            "effectiveValue": "103.9.96.0/22",
+		                            "subnetCount": 1022,
+		                            "subnetBits": 10
+		                        }
+		                    ],
+		                    "rfc4408DnsCount": 1,
+		                    "rfc7208DnsCount": 1,
+		                    "errors": [
+		                        {
+		                            "error": "spf-unexpected-result-neutral"
+		                        }
+		                    ]
+		                },
+		                {
+		                    "id": 49,
+		                    "qualifier": "~",
+		                    "mechanism": "all"
+		                }
+		            ],
+		            "rfc4408DnsCount": 1,
+		            "rfc7208DnsCount": 1
+		        },
+		        {
+		            "id": 50,
+		            "qualifier": "+",
+		            "mechanism": "include",
+		            "value": "spf.city.ac.uk",
+		            "effectiveValue": "spf.city.ac.uk.",
+		            "raw": "v=spf1 ip4:138.40.77.122 ip4:138.40.77.123 ip4:138.40.77.124 ip4:138.40.77.125 ip4:138.40.65.148 ip4:138.40.65.149 ~all",
+		            "children": [
+		                {
+		                    "id": 51,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "138.40.77.122",
+		                    "effectiveValue": "138.40.77.122",
+		                    "subnetCount": 1
+		                },
+		                {
+		                    "id": 52,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "138.40.77.123",
+		                    "effectiveValue": "138.40.77.123",
+		                    "subnetCount": 1
+		                },
+		                {
+		                    "id": 53,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "138.40.77.124",
+		                    "effectiveValue": "138.40.77.124",
+		                    "subnetCount": 1
+		                },
+		                {
+		                    "id": 54,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "138.40.77.125",
+		                    "effectiveValue": "138.40.77.125",
+		                    "subnetCount": 1
+		                },
+		                {
+		                    "id": 55,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "138.40.65.148",
+		                    "effectiveValue": "138.40.65.148",
+		                    "subnetCount": 1
+		                },
+		                {
+		                    "id": 56,
+		                    "qualifier": "+",
+		                    "mechanism": "ip4",
+		                    "value": "138.40.65.149",
+		                    "effectiveValue": "138.40.65.149",
+		                    "subnetCount": 1
+		                },
+		                {
+		                    "id": 57,
+		                    "qualifier": "~",
+		                    "mechanism": "all"
+		                }
+		            ],
+		            "rfc4408DnsCount": 1,
+		            "rfc7208DnsCount": 1
+		        },
+		        {
+		            "id": 58,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "213.206.140.0/22",
+		            "effectiveValue": "213.206.140.0/22",
+		            "subnetCount": 1022,
+		            "subnetBits": 10
+		        },
+		        {
+		            "id": 59,
+		            "qualifier": "+",
+		            "mechanism": "ip4",
+		            "value": "82.195.160.0/22",
+		            "effectiveValue": "82.195.160.0/22",
+		            "subnetCount": 1022,
+		            "subnetBits": 10
+		        },
+		        {
+		            "id": 60,
+		            "qualifier": "~",
+		            "mechanism": "all"
+		        }
+		    ]
+		}
+
     var triangle = d3.symbol().type(d3.symbolTriangle);
     var circle = d3.symbol().type(d3.symbolCircle);
 
@@ -2549,18 +3096,45 @@ var CAMDEN = {
       return (d.data.mechanism ? d.data.mechanism + ': ' : value === '' ? '?' : '') + value;
     }
 
+    function hasError(d) {
+        return d.data.errors && d.data.errors.length > 0;
+    }
+
+    var triangle = d3.symbol().type(d3.symbolTriangle);
+    var circle = d3.symbol().type(d3.symbolCircle);
+
+    var fieldFn = null;
     var theme = 'light';
     var tree = d3_rs_tree.html('flare')
                     .theme(theme)
                     .label(label)
                     .nodeRadius([6, 20])
-                    .nodeSymbol(function (d) { return d.data.name === 'cluster' ? triangle : circle})
+                    .badge(function (d) {
+                        return fieldFn(d);
+                    })
+                    .nodeFill(function (d) {
+                        if (hasError(d)) {
+                            return 'red';
+                        }
+                        if (d.hasChildren) {
+                            return 'green';
+                        }
+                        return null;
+                    })
+                    .nodeSymbol(function (d) { 
+                        return hasError(d) ? triangle : circle
+                    })
                     .nameClass(function (d) {
                       return d.hasChildren ? 'default' : 'ip-addr';
                     });
     
-    var dataSet = SUBITO;
-    dataSet.connections = SUBITO_CONNECTIONS;
+    var THEME = {
+        defaut: '#28AA64',
+        colors: [ '#D776AE', '#A580D7', '#67ACDE', '#F1952D' ]
+    };
+
+    var dataSet = CITY;
+    //dataSet.connections = SUBITO_CONNECTIONS;
     var data = d3_rs_tree.mapChildren(dataSet, label);
     sortDefault();
     //data.collapse(1);
@@ -2630,7 +3204,8 @@ var CAMDEN = {
 
     function sortDefault() {
       var state = data.getOpenState();
-
+      fieldFn = function (d) { return null; };
+      
       data.expand()
           .sum(function (d) { return 0; })
           .scale()
@@ -2649,6 +3224,8 @@ var CAMDEN = {
 
     function doSort(field) {
       var state = data.getOpenState();
+      const fmt = d3.format(',')
+      fieldFn = function (d) { return d.value ? fmt(d.value) : null; };
 
       data.expand()
           .sum(function (d) { return d[field]; })
