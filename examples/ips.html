@@ -3224,8 +3224,9 @@ var CITY = {
 
     function doSort(field) {
       var state = data.getOpenState();
-      const fmt = d3.format(',')
-      fieldFn = function (d) { return d.value ? fmt(d.value) : null; };
+      const fmt = d3.format(',.0f')
+
+      fieldFn = function (d) { return d.value ? d.value > 9999 ? '2^ ' + fmt(Math.sqrt(d.value)) : fmt(d.value) : null; };
 
       data.expand()
           .sum(function (d) { return d[field]; })

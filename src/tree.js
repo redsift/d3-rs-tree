@@ -235,15 +235,16 @@ export default function trees(id) {
   // Seperation function could be custom    
   const separation = (a, b) => {
     if (a.parent !== b.parent) {
-      return 2.5; // space between groups at same depth
+      return 3; // space between groups at same depth
     } 
     
     if (a.children && b.children) {
-      return 5; // open children
+      return 6; // open children
     }
 
     if ((a.children || b.children) && (!a.hasChildren || !b.hasChildren)) {
-      return 6; 
+      const s = max([a.children ? a.children.length : 0, b.children ? b.children.length : 0])
+      return s * 1.33; 
     }    
 
     if (a.children || b.children) {
@@ -406,12 +407,11 @@ export default function trees(id) {
         }
 
         const open = her.countPeers(d, (d) => d.children);     
-        if (open == her.countPeers(d, (d) => d.hasChildren)) {
-          d.labelHidden = false; // always show labels if all nodes are open
+        if (open > 1 && open == her.countPeers(d, (d) => d.hasChildren)) {
+          d.labelHidden = false; // always show labels if all nodes are open & there is more that 1 expanded node
           return;
         }
         d.labelHidden = open > 0;
-        console.log(open, d.data.value);
       });
 
       let treeData = trees(her);
@@ -432,16 +432,14 @@ export default function trees(id) {
     
       nodeEnter.append('text')
           .attr('class', 'label')
-          .attr('dy', d => d.id == 1 ? maxNodeRadius(d) : 0)
-          .attr('dominant-baseline', d => d.id == 1 ? 'text-before-edge' : 'middle')
-          .attr('text-anchor', d => d.id == 1 ? 'start' : d.children || d.hasChildren ? 'end' : 'start')
+          .attr('dy', d => d.id == 0 ? maxNodeRadius(d) : 0)
+          .attr('dominant-baseline', d => d.id == 0 ? 'text-before-edge' : 'middle')
+          .attr('text-anchor', d => d.id == 0 ? 'start' : d.children || d.hasChildren ? 'end' : 'start')
           .text(_label)
           .style('fill-opacity', TINY);
 
       nodeEnter.append('text')
           .attr('class', 'badge')
-          .attr('dominant-baseline', 'ideographic')        
-          .attr('dy', -DEFAULT_TEXT_PADDING)
           .attr('text-anchor', 'end')
           .text(_badge)
           .style('fill-opacity', TINY);
@@ -451,6 +449,12 @@ export default function trees(id) {
       if (onClick) {    
         nodeUpdate.select('path').on('click', onClick);
       }
+      
+      nodeUpdate.select('text.badge')
+        .attr('dy', (d) => d.hasChildren ? -DEFAULT_TEXT_PADDING : 0)
+        .attr('dominant-baseline', (d) => d.hasChildren ? 'ideographic' : 'central');
+
+
       if (transition === true) {
         nodeUpdate = nodeUpdate.transition(context);
       }
@@ -466,12 +470,12 @@ export default function trees(id) {
           .style('fill', _nodeFill);
     
       nodeUpdate.select('text.label')
-          .attr('dx', d => d.id == 1 ? 0 : d.hasChildren ? -(_nodeRadius(d) + DEFAULT_TEXT_PADDING) : maxNodeRadius() + DEFAULT_TEXT_PADDING)
+          .attr('dx', d => d.id == 0 ? 0 : d.hasChildren ? -(_nodeRadius(d) + DEFAULT_TEXT_PADDING) : maxNodeRadius() + DEFAULT_TEXT_PADDING)
           .attr('class', d => {
             const c = _nameClass(d) || '';
             return 'label ' + c;
           })
-          .style('fill-opacity', d => d.labelHidden ? TINY : 1.0);
+          .style('fill-opacity', d => d.labelHidden ? SMALL : 1.0);
 
       nodeUpdate.select('text.badge')
           .attr('dx', d => -(_nodeRadius(d) + DEFAULT_TEXT_PADDING))  
@@ -627,6 +631,9 @@ export default function trees(id) {
                     font-weight: ${fonts.variable.weightColor};  
                     fill: ${display[_theme].text}                
                   }
+                  ${_impl.self()} text::selection {
+                    fill-opacity: 1.0; 
+                  }
                   ${_impl.self()} text.badge {
                     cursor: default;                  
                   }
@@ -638,7 +645,7 @@ export default function trees(id) {
                   }
 
                   ${_impl.self()} .node path.interactive {
-                    cursor: hand;                  
+                    cursor: pointer;                  
                   }
 
                   ${_impl.self()} .link {
