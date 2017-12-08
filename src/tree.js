@@ -3,7 +3,8 @@ import { select } from 'd3-selection';
 import { hierarchy, tree } from 'd3-hierarchy';
 import { min, max } from 'd3-array';
 import { scalePow } from 'd3-scale';
-import { symbol, symbolCircle } from 'd3-shape';
+import { symbol, symbolCircle, line, curveBundle } from 'd3-shape';
+import { body as tip } from '@redsift/d3-rs-tip';
 
 import { html as svg } from '@redsift/d3-rs-svg';
 import { 
@@ -30,6 +31,10 @@ const DEFAULT_PIXELS_PER_NODE = 35;
 const CONNECTION_CURVE = 0.51;
 const CONNECTION_SELF_RADIUS = 12;
 const CONNECTION_MAX_RADIUS = 20;
+const CIRCULAR_THRESHOLD = 10; // make curves circular under this interpoint distance
+const DEFAULT_TIP_OFFSET = 5;
+
+const lineGenerator = line().curve(curveBundle.beta(1.0));
 
 // Creates a curved (diagonal) path from parent to the child nodes
 function diagonal(s, d) {
@@ -44,6 +49,49 @@ function diagonal(s, d) {
 }
 
 function arc(s, d) {
+  if (s.x == null || s.y == null || d.x == null || d.y == null) {
+    return ''
+  }
+  const CURVE_OFFSET = 20;
+
+  let data = [];
+  
+  if (s.common || s.y == d.y) {
+    // points are in line
+    const inc = (d.x - s.x) / 4.0;
+    const offset = (s.right ? -CURVE_OFFSET : CURVE_OFFSET);
+    if (inc > CIRCULAR_THRESHOLD) {
+      // points are far apart
+      data = [
+        [s.y, s.x],
+        [s.y + offset, s.x + 1 * inc],
+        [s.y + 3 * offset , s.x + 2 * inc],
+        [s.y + offset, s.x + 3 * inc],
+        [d.y, d.x]
+      ];
+    } else {
+      // points are close
+      data = [
+        [s.y, s.x],
+        [s.y + offset, s.x - CIRCULAR_THRESHOLD],
+        [d.y + offset, d.x + CIRCULAR_THRESHOLD],
+        [d.y, d.x]
+      ];
+    }
+  } else {
+    // points are NOT in line
+    const inc = (d.y - s.y) / 4.0;
+    data = [
+      [s.y, s.x],
+      [s.y + 2 * inc, s.x + (d.x - s.x) / 2.0 + CURVE_OFFSET],
+      [d.y, d.x]
+    ];
+  } 
+  
+  return lineGenerator(data);
+}
+
+function circle(s, d) {
   if (s.x == null || s.y == null || d.x == null || d.y == null) {
     return ''
   }
@@ -230,7 +278,8 @@ export default function trees(id) {
       nodeClass = null,
       nameClass = null,
       label = null, 
-      badge = null;
+      badge = null,
+      tipHtml = null;
   
   // Seperation function could be custom    
   const separation = (a, b) => {
@@ -257,7 +306,11 @@ export default function trees(id) {
 
     return 2;
   }
-      
+  
+  let tid = null;
+  if (id) tid = 'tip-' + id;
+  let rtip = tip(tid)
+
   function _impl(context) {
     let selection = context.selection ? context.selection() : context,
         transition = (context.selection !== undefined);
@@ -309,6 +362,8 @@ export default function trees(id) {
     } else if (typeof(_nodeSymbol) !== 'function') {
       _nodeSymbol = () => nodeSymbol;
     }
+    
+    rtip.offset([ -DEFAULT_TIP_OFFSET, 1 ]).style(null).html(tipHtml).transition(333);
 
     selection.each(function() {
       let node = select(this);  
@@ -353,7 +408,7 @@ export default function trees(id) {
       let _style = style;
       if (_style === undefined) {
         // build a style sheet from the embedded charts
-        _style = [ _impl ].filter(c => c != null).reduce((p, c) => p + c.defaultStyle(theme, w), '');
+        _style = [ _impl, rtip ].filter(c => c != null).reduce((p, c) => p + c.defaultStyle(theme, w), '');
       }    
 
       root.style(_style);
@@ -361,6 +416,8 @@ export default function trees(id) {
 
       let snode = node.select(root.self());
       let elmS = snode.select(root.child());
+      
+      elmS.call(rtip);
 
       let g = elmS.select(_impl.self())
       if (g.empty()) {
@@ -420,15 +477,14 @@ export default function trees(id) {
       let nodes = treeData.descendants(),
           links = treeData.descendants().slice(1);
 
-      let gNode = g.selectAll('g.node').data(nodes, (d) => d.id || 0);
       
+
+      let gNode = g.selectAll('g.node').data(nodes, (d) => d.id || 0);
+     
       // Enter any new nodes at the parent's previous position.
-      let nodeEnter = gNode.enter().append('g')
+      let nodeEnter = gNode.enter().insert('g', [ 'path.connection', 'g.symbol' ])
           .attr('class', 'node')
           .attr('transform', d => `translate(${d.parent ? d.parent.y : her.y},${d.parent ? d.parent.x : her.x})`);
-      
-      nodeEnter.append('path')
-        .attr('d', d => _nodeSymbol(d).size(TINY)(d)); // TINY
     
       nodeEnter.append('text')
           .attr('class', 'label')
@@ -446,28 +502,16 @@ export default function trees(id) {
     
       // Transition nodes to their new position.
       let nodeUpdate = nodeEnter.merge(gNode);
-      if (onClick) {    
-        nodeUpdate.select('path').on('click', onClick);
-      }
       
       nodeUpdate.select('text.badge')
         .attr('dy', (d) => d.hasChildren ? -DEFAULT_TEXT_PADDING : 0)
         .attr('dominant-baseline', (d) => d.hasChildren ? 'ideographic' : 'central');
-
 
       if (transition === true) {
         nodeUpdate = nodeUpdate.transition(context);
       }
 
       nodeUpdate.attr('transform', d => `translate(${d.y},${d.x})`);
-    
-      nodeUpdate.select('path')
-          .attr('d', d => {
-            const s = _nodeRadius(d);
-            return _nodeSymbol(d).size(s*s)(d);
-          })
-          .attr('class', _nodeClass)
-          .style('fill', _nodeFill);
     
       nodeUpdate.select('text.label')
           .attr('dx', d => d.id == 0 ? 0 : d.hasChildren ? -(_nodeRadius(d) + DEFAULT_TEXT_PADDING) : maxNodeRadius() + DEFAULT_TEXT_PADDING)
@@ -492,11 +536,8 @@ export default function trees(id) {
           .attr('transform', d => `translate(${d.parent ? d.parent.y : her.y},${d.parent ? d.parent.x : her.x})`)
           .remove();
     
-      // On exit reduce the node circles size to 0
-      nodeExit.select('path').attr('d', d => _nodeSymbol(d).size(TINY)(d));
-
       // On exit reduce the opacity of text labels
-      nodeExit.select('text').style('fill-opacity', TINY);
+      nodeExit.selectAll('text').style('fill-opacity', TINY);
 
       // Update the links...
       let link = g.selectAll('path.link').data(links, (d, i) => d.id || i);
@@ -565,37 +606,50 @@ export default function trees(id) {
         // catch all
         from = from || nodes[0];
         to = to || nodes[0];
+        const common = from.parent === to.parent;
 
         d.fromXY = {
           x: from.x, 
           y: from.y,
-          right: !from.hasChildren
+          right: !from.hasChildren,
+          common: common
         };
 
         d.toXY = {
           x: to.x, 
           y: to.y,
-          right: !to.hasChildren
+          right: !to.hasChildren,
+          common: common
         };
 
         return `${d.from}:${d.to}`
       });
 
-      let connectionEnter = connection.enter().insert('path', 'g')
+      let connectionEnter = connection.enter().insert('path', 'g.symbol')
       .attr('class', 'connection')
       .attr('fill', 'none')
       .attr('d', (d) => arc(d.fromXY, d.fromXY))
-      //.style('stroke-opacity', TINY);
+      .style('stroke-opacity', TINY);
 
       // UPDATE
       let connectionUpdate = connectionEnter.merge(connection);
+
+      connectionUpdate.on('mouseover', function (d) {
+        if (rtip.html() == null) return;
+        rtip.show.apply(this, [ d ]);
+      });
+      
+      connectionUpdate.on('mouseout', function () {
+        rtip.hide.apply(this);
+      });
+
       if (transition === true) {
         connectionUpdate = connectionUpdate.transition(context);
       }
 
       // Transition back to the parent element position
       connectionUpdate.attr('d', (d) => arc(d.fromXY, d.toXY))
-      .style('stroke-opacity', 1.0);   
+      .style('stroke-opacity', 0.5);   
 
       let connectionExit = connection.exit();
       if (transition === true) {
@@ -605,6 +659,58 @@ export default function trees(id) {
       connectionExit.attr('d', d => arc(d.fromXY, d.fromXY))
         .style('stroke-opacity', TINY)
         .remove();      
+
+      // --- start clickable symbols    
+      let gSym = g.selectAll('g.symbol').data(nodes, (d) => d.id || 0);
+      let symEnter = gSym.enter().append('g')
+        .attr('class', 'symbol')
+        .attr('transform', d => `translate(${d.parent ? d.parent.y : her.y},${d.parent ? d.parent.x : her.x})`);
+
+      symEnter.append('path')
+        .attr('d', d => _nodeSymbol(d).size(TINY)(d)); // TINY
+      let symUpdate = symEnter.merge(gSym);
+      let pathUpdate = symUpdate.select('path');
+      
+      pathUpdate.on('mouseover', function (d) {
+        if (rtip.html() == null) return;
+        rtip.show.apply(this, [ d ]);
+      });
+      
+      pathUpdate.on('mouseout', function () {
+        rtip.hide.apply(this);
+      });
+
+      rtip.hide();
+
+      if (onClick) {    
+        pathUpdate.on('click', onClick);
+      }
+      if (transition === true) {
+        symUpdate = symUpdate.transition(context);
+      }
+      symUpdate.attr('transform', d => `translate(${d.y},${d.x})`);
+
+      symUpdate.select('path')
+        .attr('d', d => {
+          const s = _nodeRadius(d);
+          return _nodeSymbol(d).size(s*s)(d);
+        })
+        .attr('class', _nodeClass)
+        .style('fill', _nodeFill);
+
+      let symExit = gSym.exit();
+      if (transition === true) {
+        symExit = symExit.transition(context);
+      }
+
+      symExit
+          .attr('transform', d => `translate(${d.parent ? d.parent.y : her.y},${d.parent ? d.parent.x : her.x})`)
+          .remove();
+
+      // On exit reduce the node circles size to 0
+      symExit.select('path').attr('d', d => _nodeSymbol(d).size(TINY)(d));
+      // --- end clickable symbols
+
 
       // Store the old positions for transition.
       nodes.forEach(d => {
@@ -637,30 +743,44 @@ export default function trees(id) {
                   ${_impl.self()} text.badge {
                     cursor: default;                  
                   }
-                  ${_impl.self()} .node path {
+                  ${_impl.self()} g.symbol path {
                     fill: ${display[_theme].background};
                     stroke: ${display[_theme].axis};
                     stroke-width: 1.5; /* need > 1 for decent rendering on non retina */
                     shape-rendering: geometricprecision;
                   }
 
-                  ${_impl.self()} .node path.interactive {
-                    cursor: pointer;                  
+                  ${_impl.self()} g.symbol path.interactive {
+                    cursor: pointer;   
+                    pointer-events: all;               
+                  }
+                  
+                  ${_impl.self()} g.symbol path:hover {
+                    fill: ${display[_theme].axis} !important;   
                   }
 
                   ${_impl.self()} .link {
-                    fill: none;
                     stroke: ${display[_theme].grid};
                     stroke-width: ${widths.axis};
                   }
 
                   ${_impl.self()} .connection {
-                    fill: none;
                     stroke: ${COLOR_ERROR};
                     stroke-width: ${widths.grid*2};
-                    stroke-dasharray: ${dashes.grid}
+                    /*
+                    stroke-dasharray: ${dashes.grid};
+                    pointer-events: all;
+                    */
                   }
 
+                  ${_impl.self()} .connection:hover {
+                    stroke: ${display[_theme].axis};
+                    stroke-opacity: 1.0 !important; 
+                  }
+
+                  ${rtip.self()}.n:after {
+                    display: none !important;
+                  }                  
                 `;
   
   _impl.importFonts = function(value) {
@@ -742,6 +862,10 @@ export default function trees(id) {
   _impl.badge = function(value) {
     return arguments.length ? (badge = value, _impl) : badge;
   }; 
-  
+
+  _impl.tipHtml = function(value) {
+    return arguments.length ? (tipHtml = value, _impl) : tipHtml;
+  };    
+
   return _impl;
 }

@@ -30,7 +30,18 @@
       fill: #aaa;
       font-size: 0.75em;
     }
-
+    div.d3-tip > div:first-child {
+        padding: 0 0 0.75em 0;
+    }
+    div.d3-tip > div:first-child:after {
+        content: "";
+        background-color: #fff;
+        width: 100%;
+        height: 2px;
+        top: 0.38em;
+        position: relative;
+        display: block;
+    }
 
     </style> 
   </head>
@@ -3100,6 +3111,14 @@ var CITY = {
         return d.data.errors && d.data.errors.length > 0;
     }
 
+    function toolTipForNode(d) {
+        return `<div>${d.value}</div><div>Something</div>`;
+    }
+    
+    function toolTipForConnecion(d) {
+        return `<div>${d.from}</div><div>${d.to}</div>`;
+    }
+
     var triangle = d3.symbol().type(d3.symbolTriangle);
     var circle = d3.symbol().type(d3.symbolCircle);
 
@@ -3126,6 +3145,12 @@ var CITY = {
                     })
                     .nameClass(function (d) {
                       return d.hasChildren ? 'default' : 'ip-addr';
+                    })
+                    .tipHtml(function (d) {
+                        if (d.data) {
+                            return toolTipForNode(d.data);
+                        }
+                        return toolTipForConnecion(d);
                     });
     
     var THEME = {
@@ -3134,7 +3159,7 @@ var CITY = {
     };
 
     var dataSet = CITY;
-    //dataSet.connections = SUBITO_CONNECTIONS;
+    dataSet.connections = SUBITO_CONNECTIONS;
     var data = d3_rs_tree.mapChildren(dataSet, label);
     sortDefault();
     //data.collapse(1);
@@ -3226,7 +3251,7 @@ var CITY = {
       var state = data.getOpenState();
       const fmt = d3.format(',.0f')
 
-      fieldFn = function (d) { return d.value ? d.value > 9999 ? '2^ ' + fmt(Math.sqrt(d.value)) : fmt(d.value) : null; };
+      fieldFn = function (d) { return d.value ? d.value > 99999 ? '~ 2^' + fmt(Math.sqrt(d.value)) : fmt(d.value) : null; };
 
       data.expand()
           .sum(function (d) { return d[field]; })
