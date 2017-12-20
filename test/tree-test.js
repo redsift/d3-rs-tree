@@ -11,7 +11,7 @@ tape("html() empty state", function(t) {
     t.equal(el.selectAll('svg').size(), 1);
     
     // should have an X and Y major and minor axis
-    t.equal(el.selectAll('g.axis').size(), 4);
+    t.equal(el.selectAll('g.chart-tree').size(), 1);
         
     t.end();
 });

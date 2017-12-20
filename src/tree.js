@@ -1,7 +1,7 @@
 
 import { select } from 'd3-selection';
 import { hierarchy, tree } from 'd3-hierarchy';
-import { min, max } from 'd3-array';
+import { max } from 'd3-array';
 import { scalePow } from 'd3-scale';
 import { symbol, symbolCircle, line, curveBundle } from 'd3-shape';
 import { body as tip } from '@redsift/d3-rs-tip';
@@ -24,13 +24,8 @@ const DEFAULT_TEXT_SCALE = 8.39; // hack value to do fast estimation of length o
 const DEFAULT_NODE_RADIUS = 5.0;
 const TINY = 1e-6;
 const SMALL = 1e-1;
-const HUGE = 1e6;
-const MED = 3;
 const DEFAULT_TEXT_PADDING = 5;
 const DEFAULT_PIXELS_PER_NODE = 35;
-const CONNECTION_CURVE = 0.51;
-const CONNECTION_SELF_RADIUS = 12;
-const CONNECTION_MAX_RADIUS = 20;
 const CIRCULAR_THRESHOLD = 10; // make curves circular under this interpoint distance
 const DEFAULT_TIP_OFFSET = 5;
 
@@ -90,6 +85,11 @@ function arc(s, d) {
   
   return lineGenerator(data);
 }
+/* Older circle join function, not used. TODO: remove
+
+const CONNECTION_CURVE = 0.51;
+const CONNECTION_SELF_RADIUS = 12;
+const CONNECTION_MAX_RADIUS = 20;
 
 function circle(s, d) {
   if (s.x == null || s.y == null || d.x == null || d.y == null) {
@@ -121,6 +121,7 @@ function circle(s, d) {
   A ${dr}, ${dr} 0 1, 1
     ${b.y+SMALL} ${b.x-SMALL*dir}`;
 }
+*/
 
 export function mapChildren(source, labelFn) {
   labelFn = labelFn || (d => d.data.name)
@@ -368,7 +369,7 @@ export default function trees(id) {
     selection.each(function() {
       let node = select(this);  
 
-      let her = node.datum() || {};
+      let her = node.datum();
 
       let sh = height || Math.round(width * DEFAULT_ASPECT);
       if (pixelsPerNode > 0) { // auto compute height
@@ -379,6 +380,7 @@ export default function trees(id) {
 
         let levelWidth = [ 1 ];
         const childCount = (level, n) => {
+          if (n == null) return;
           if (n.children && n.children.length > 0) {
               if (levelWidth.length <= level + 1) levelWidth.push(0);
               levelWidth[level + 1] += n.children.length;
@@ -426,14 +428,22 @@ export default function trees(id) {
       
       // try and compute how much padding will be required for a fully expanded text label
 
-      
+      let maxZ = 0,
+          minZ = 0,
+          maxS = 0;
+      if (her != null) {
+        maxZ = her.maxZ,
+        minZ = her.minZ,
+        maxS = her.maxS;
+      }
+
       let _nodeRadius = nodeRadius;
       let maxNodeRadius = null;
       if (typeof(_nodeRadius) !== 'function') {
         if (Array.isArray(nodeRadius)) {
           let log = () => nodeRadius[0];
-          if (her.minZ != null && her.maxZ != null) {
-            log = scalePow().exponent(1.1).domain([her.minZ, her.maxZ]).range(nodeRadius).clamp(true);
+          if (minZ != null && maxZ != null) {
+            log = scalePow().exponent(1.1).domain([minZ, maxZ]).range(nodeRadius).clamp(true);
           }
           _nodeRadius = (d) => {
             let r = log(d.value);
@@ -454,30 +464,34 @@ export default function trees(id) {
 
       // estimate with msize
       let r = maxNodeRadius();
-      let trees = tree().size([h, w - (her.maxS * msize) - r  - DEFAULT_TEXT_PADDING]).separation(separation);
+      let trees = tree().size([h, w - (maxS * msize) - r  - DEFAULT_TEXT_PADDING]).separation(separation);
 
       // Pre-process to hide labels
-      her.each(d => {
-        if (d.children) {
-          d.labelHidden = false; // always show labels for open nodes
-          return;
-        }
+      if (her != null ) {
+        her.each(d => {
+          if (d.children) {
+            d.labelHidden = false; // always show labels for open nodes
+            return;
+          }
 
-        const open = her.countPeers(d, (d) => d.children);     
-        if (open > 1 && open == her.countPeers(d, (d) => d.hasChildren)) {
-          d.labelHidden = false; // always show labels if all nodes are open & there is more that 1 expanded node
-          return;
-        }
-        d.labelHidden = open > 0;
-      });
+          const open = her.countPeers(d, (d) => d.children);     
+          if (open > 1 && open == her.countPeers(d, (d) => d.hasChildren)) {
+            d.labelHidden = false; // always show labels if all nodes are open & there is more that 1 expanded node
+            return;
+          }
+          d.labelHidden = open > 0;
+        });
+      }
 
-      let treeData = trees(her);
-    
       // Compute the new tree layout.
-      let nodes = treeData.descendants(),
-          links = treeData.descendants().slice(1);
+      let nodes = [], 
+          links = []; 
 
-      
+      if (her != null) {    
+        let treeData = trees(her);      
+        nodes = treeData.descendants();
+        links = treeData.descendants().slice(1);
+      }
 
       let gNode = g.selectAll('g.node').data(nodes, (d) => d.id || 0);
      
@@ -582,7 +596,7 @@ export default function trees(id) {
         .remove();
 
 
-      let connection = g.selectAll('path.connection').data(her.data.connections || [], (d) => {
+      let connection = g.selectAll('path.connection').data(her && her.data.connections ? her.data.connections : [], (d) => {
 
         const closest = (id) => {
           const h = her.hierarchy[id] || [];

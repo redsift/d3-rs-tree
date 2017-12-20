@@ -41,6 +41,3 @@
     ...
 
 ## TODO
-- Animate fade in/update/removal, text label, node hunting when closed, curve when same depth
-- Subitiles
-- Tips
