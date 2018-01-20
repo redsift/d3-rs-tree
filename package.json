@@ -1,6 +1,6 @@
 {
   "name": "@redsift/d3-rs-tree",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Generates tree charts using D3v4.",
   "keywords": [
     "tree",
@@ -30,13 +30,13 @@
     "prepublish": "npm run build"
   },
   "dependencies": {
-    "@redsift/d3-rs-svg": "~0.3.0",
+    "@redsift/d3-rs-svg": "~0.4.0",
     "@redsift/d3-rs-theme": "~0.4.2",
-    "@redsift/d3-rs-tip": "^0.5.0",
+    "@redsift/d3-rs-tip": "^0.6.0",
     "d3-array": "^1.2.1",
     "d3-hierarchy": "^1.1.5",
     "d3-scale": "^1.0.7",
-    "d3-selection": "^1.0.2",
+    "d3-selection": "^1.2.0",
     "d3-shape": "^1.2.0"
   },
   "devDependencies": {
