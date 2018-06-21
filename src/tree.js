@@ -124,7 +124,7 @@ function circle(s, d) {
 */
 
 export function mapChildren(source, labelFn) {
-  labelFn = labelFn || (d => d.data.name)
+  labelFn = labelFn || (d => d.data.name || '')
 
   let data = hierarchy(source);
   let all = {};
@@ -267,7 +267,7 @@ export default function trees(id) {
       width = DEFAULT_SIZE,
       height = null,
       pixelsPerNode = DEFAULT_PIXELS_PER_NODE,
-      margin = DEFAULT_MARGIN,
+      margin = {top: DEFAULT_MARGIN, bottom: DEFAULT_MARGIN, left: DEFAULT_MARGIN, right: 0},
       style = undefined,
       scale = 1.0,
       importFonts = true,
@@ -277,6 +277,7 @@ export default function trees(id) {
       nodeSymbol = null,
       nodeFill = null,
       nodeClass = null,
+      pathFill = null,
       nameClass = null,
       label = null, 
       badge = null,
@@ -349,6 +350,13 @@ export default function trees(id) {
       _nameClass = () => nameClass;
     }
     
+    let _pathFill = pathFill;
+    if (_pathFill == null) {
+      _pathFill = () => display[theme].grid;
+    } else if (typeof(_pathFill) !== 'function') {
+      _pathFill = () => pathFill;
+    }
+
     let _nodeFill = nodeFill;
     if (_nodeFill == null) {
       _nodeFill = (d) => d.hasChildren ? brand.standard[brand.names.green] : null;
@@ -577,6 +585,7 @@ export default function trees(id) {
 
       // Transition back to the parent element position
       linkUpdate.attr('d', d => diagonal(d, d.parent))
+        .attr('stroke', _pathFill)
         .style('stroke-opacity', 1.0);
 
       // Remove any exiting links
@@ -774,7 +783,6 @@ export default function trees(id) {
                   }
 
                   ${_impl.self()} .link {
-                    stroke: ${display[_theme].grid};
                     stroke-width: ${widths.axis};
                   }
 
@@ -856,6 +864,10 @@ export default function trees(id) {
   _impl.nodeFill = function(value) {
     return arguments.length ? (nodeFill = value, _impl) : nodeFill;
   };    
+
+  _impl.pathFill = function(value) {
+    return arguments.length ? (pathFill = value, _impl) : pathFill;
+  }; 
 
   _impl.nodeClass = function(value) {
     return arguments.length ? (nodeClass = value, _impl) : nodeClass;
