@@ -281,7 +281,8 @@ export default function trees(id) {
       nameClass = null,
       label = null, 
       badge = null,
-      tipHtml = null;
+      tipHtml = null,
+      interactive = true;
   
   // Seperation function could be custom    
   const separation = (a, b) => {
@@ -338,7 +339,7 @@ export default function trees(id) {
 
     let _nodeClass = nodeClass;
     if (_nodeClass == null) {
-      _nodeClass = (d) => d.hasChildren ? 'interactive' : null;
+      _nodeClass = (d) => (d.hasChildren && interactive) ? 'interactive' : null;
     } else if (typeof(_nodeClass) !== 'function') {
       _nodeClass = () => nodeClass;
     }
@@ -891,7 +892,12 @@ export default function trees(id) {
 
   _impl.tipHtml = function(value) {
     return arguments.length ? (tipHtml = value, _impl) : tipHtml;
-  };    
+  };  
+
+  _impl.interactive = function(value) {
+    return arguments.length ? (interactive = value, _impl) : interactive;
+  };
+  
 
   return _impl;
 }
