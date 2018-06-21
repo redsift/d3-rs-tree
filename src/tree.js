@@ -279,6 +279,7 @@ export default function trees(id) {
       nodeClass = null,
       pathFill = null,
       nameClass = null,
+      nameOpacity = null,
       label = null, 
       badge = null,
       tipHtml = null,
@@ -349,6 +350,13 @@ export default function trees(id) {
       _nameClass = () => 'default';
     } else if (typeof(_nameClass) !== 'function') {
       _nameClass = () => nameClass;
+    }
+
+    let _nameOpacity = nameOpacity;
+    if (_nameOpacity == null) {
+      _nameOpacity = (d) => d.labelHidden ? SMALL : 1.0;
+    } else if (typeof(_nameOpacity) !== 'function') {
+      _nameOpacity = () => _nameOpacity;
     }
     
     let _pathFill = pathFill;
@@ -535,14 +543,14 @@ export default function trees(id) {
       }
 
       nodeUpdate.attr('transform', d => `translate(${d.y},${d.x})`);
-    
+
       nodeUpdate.select('text.label')
           .attr('dx', d => d.id == 0 ? 0 : d.hasChildren ? -(_nodeRadius(d) + DEFAULT_TEXT_PADDING) : maxNodeRadius() + DEFAULT_TEXT_PADDING)
           .attr('class', d => {
             const c = _nameClass(d) || '';
             return 'label ' + c;
           })
-          .style('fill-opacity', d => d.labelHidden ? SMALL : 1.0);
+          .style('fill-opacity', _nameOpacity);
 
       nodeUpdate.select('text.badge')
           .attr('dx', d => -(_nodeRadius(d) + DEFAULT_TEXT_PADDING))  
@@ -896,6 +904,10 @@ export default function trees(id) {
 
   _impl.interactive = function(value) {
     return arguments.length ? (interactive = value, _impl) : interactive;
+  };
+
+  _impl.nameOpacity = function(value) {
+    return arguments.length ? (nameOpacity = value, _impl) : nameOpacity;
   };
   
 
