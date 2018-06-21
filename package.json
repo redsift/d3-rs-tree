@@ -1,6 +1,6 @@
 {
   "name": "@redsift/d3-rs-tree",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Generates tree charts using D3v4.",
   "keywords": [
     "tree",
