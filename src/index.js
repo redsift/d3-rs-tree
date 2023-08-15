@@ -1,9 +1,9 @@
 export {
   version
-} from "./package.json";
+} from "../package.json";
 
 
 export {
   default as html,
   mapChildren as mapChildren
-} from "./src/tree";
+} from "./tree";
